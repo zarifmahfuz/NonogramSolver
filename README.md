@@ -1,2 +1,2 @@
-# nonogram-solver
+# NonogramSolver
 Nonogram puzzle solver implementation 
