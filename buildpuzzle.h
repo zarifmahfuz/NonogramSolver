@@ -31,6 +31,9 @@ public:
 		}
 		this->row_restrictions = row_restrictions;
 		this->col_restrictions = col_restrictions;
+
+		n_rows = rows;
+		n_cols = cols;
 	}
 
 	// this method initializes run ranges for each black run in each row/column
