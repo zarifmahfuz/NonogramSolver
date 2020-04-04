@@ -82,8 +82,8 @@ public:
 					upper_lim = n_cols - 1 - cumsum;
 				}
 
-				cout << "Row " << i << ", " << "Restriction " << each_row_restrictions[j]
-				<< ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
+				// cout << "Row " << i << ", " << "Restriction " << each_row_restrictions[j]
+				// << ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
 
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
@@ -133,11 +133,90 @@ public:
 					upper_lim = n_rows - 1 - cumsum;
 				}
 
+				// cout << "Col " << i << ", " << "Restriction " << each_col_restrictions[j]
+				// << ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
+
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
 			col_black_runs.push_back(black_runs);
 		}
 	}
+
+	void check_overlap();
+
+	// implementing rule 1.2
+	// not quite sure if we can apply a rule to both a row and a col at the same time
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_2(int8_t row_or_col) {
+		if (row_or_col == 1) {
+			for (uint16_t i=0; i<n_rows*n_cols; i++) {
+				// IF A CELL IS UNKNOWN
+				if (cells[i] == -1) {
+					uint16_t curr_row = i/n_cols;
+					uint16_t curr_col = i%n_cols;
+
+					vector<range> each_row_black_runs = row_black_runs[curr_row];
+					uint16_t k = each_row_black_runs.size();
+					
+					if (k == 0) {
+						// if an entire row has no black runs, every cell in that row should be empty
+						cells[i] = 1;
+					}
+					else if (curr_col >= 0 && curr_col<each_row_black_runs[0].first) {
+						cells[i] = 1;
+					}
+					else if (each_row_black_runs[k-1].second < curr_col && curr_col < n_cols) {
+						cells[i] = 1;
+					}
+					for (uint16_t j=0; j<k-1; j++) {
+						if (each_row_black_runs[j].second < curr_col && curr_col < each_row_black_runs[j+1].first) {
+							cells[i] = 1;
+						}
+					}
+				}
+			}
+		}
+		else if (row_or_col == 2) {
+			
+			// looping over each column
+			// j represents each column
+			for (uint16_t j=0; j<n_cols; j++) {
+				// i represents an iterator over every row for each column
+				// i represents the actual index for the "cells" data structure
+				uint16_t i = j;
+
+				// counter represents the current row number
+				uint16_t counter = 0;
+
+				while (i<n_rows*n_cols) {
+					// IF A CELL IS UNKNOWN
+					if (cells[i] == -1) {
+						vector<range> each_col_black_runs = col_black_runs[j];
+						uint16_t k = each_col_black_runs.size();
+
+						if (k == 0) {
+							// if an entire col has no black runs, every cell in that col should be empty
+							cells[i] = 1;
+						}
+						else if (counter >= 0 && counter < each_col_black_runs[0].first) {
+							cells[i] = 1;
+						}
+						else if (each_col_black_runs[k-1].second < counter && counter < n_rows) {
+							cells[i] = 1;
+						}
+						for (uint16_t m=0; m<k-1; m++) {
+							if (each_col_black_runs[m].second < counter && counter < each_col_black_runs[m+1].first) {
+								cells[i] = 1;
+							}
+						}
+						i = i + n_rows;
+						counter++;
+					}
+				}
+			}
+		}
+	}
+
 };
 
 
