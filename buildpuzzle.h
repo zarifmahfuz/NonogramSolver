@@ -22,8 +22,8 @@ public:
 	vector<vector<range>> col_black_runs;
 
 	// Constructor
-	Puzzle(int rows, int cols, vector<vector<int>> row_restrictions,
-		vector<vector<int>> col_restrictions) {
+	Puzzle(uint16_t rows, uint16_t cols, vector<vector<uint16_t>> row_restrictions,
+		vector<vector<uint16_t>> col_restrictions) {
 
 		for (int i=0; i<rows*cols; i++) {
 			// initialize every cell to unknown 
@@ -60,6 +60,7 @@ public:
 					}
 					upper_lim = n_cols - cumsum; 
 				}
+
 				else if (j==k-1) {
 					upper_lim = n_cols - 1;
 
@@ -134,8 +135,7 @@ public:
 			row_black_runs.push_back(black_runs);
 		}
 	}
-
-}
+};
 
 
 
