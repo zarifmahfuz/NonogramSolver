@@ -64,13 +64,13 @@ public:
 				else if (j==k-1) {
 					upper_lim = n_cols - 1;
 
-					uint16_t lower_lim = 0;
+					lower_lim = 0;
 					for (int j_2 = 0; j_2<j; j_2++) {
 						lower_lim = lower_lim + each_row_restrictions[j_2] + 1;
 					}
 				}
 				else {
-					uint16_t lower_lim = 0;
+					lower_lim = 0;
 					for (int j_2 = 0; j_2<j; j_2++) {
 						lower_lim = lower_lim + each_row_restrictions[j_2] + 1;
 					}
@@ -81,6 +81,9 @@ public:
 					}
 					upper_lim = n_cols - 1 - cumsum;
 				}
+
+				cout << "Row " << i << ", " << "Restriction " << each_row_restrictions[j]
+				<< ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
 
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
@@ -111,14 +114,14 @@ public:
 				else if (j==k-1) {
 					upper_lim = n_rows - 1;
 
-					uint16_t lower_lim = 0;
+					lower_lim = 0;
 					for (int j_2 = 0; j_2<j; j_2++) {
 						lower_lim = lower_lim + each_col_restrictions[j_2] + 1;
 					}
 
 				}
 				else {
-					uint16_t lower_lim = 0;
+					lower_lim = 0;
 					for (int j_2 = 0; j_2<j; j_2++) {
 						lower_lim = lower_lim + each_col_restrictions[j_2] + 1;
 					}
