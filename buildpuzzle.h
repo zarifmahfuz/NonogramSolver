@@ -58,7 +58,7 @@ public:
 					for (int j_2 = j+1; j_2<k; j_2++) {
 						cumsum = cumsum + each_row_restrictions[j_2] + 1;
 					}
-					upper_lim = n_cols - cumsum; 
+					upper_lim = n_cols - 1 - cumsum; 
 				}
 
 				else if (j==k-1) {
@@ -79,7 +79,7 @@ public:
 					for (int j_2 = j+1; j_2<k; j_2++) {
 						cumsum = cumsum + each_row_restrictions[j_2] + 1;
 					}
-					upper_lim = n_cols - cumsum;
+					upper_lim = n_cols - 1 - cumsum;
 				}
 
 				black_runs.push_back(range(lower_lim, upper_lim));
@@ -106,7 +106,7 @@ public:
 					for (int j_2 = j+1; j_2<k; j_2++) {
 						cumsum = cumsum + each_col_restrictions[j_2] + 1;
 					}
-					upper_lim = n_rows - cumsum; 
+					upper_lim = n_rows - 1 - cumsum; 
 				}
 				else if (j==k-1) {
 					upper_lim = n_rows - 1;
@@ -127,12 +127,12 @@ public:
 					for (int j_2 = j+1; j_2<k; j_2++) {
 						cumsum = cumsum + each_col_restrictions[j_2] + 1;
 					}
-					upper_lim = n_rows - cumsum;
+					upper_lim = n_rows - 1 - cumsum;
 				}
 
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
-			row_black_runs.push_back(black_runs);
+			col_black_runs.push_back(black_runs);
 		}
 	}
 };
