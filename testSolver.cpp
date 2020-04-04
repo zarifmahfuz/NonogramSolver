@@ -5,6 +5,8 @@
 #include <string> 
 #include <sstream>   
 
+#include "buildpuzzle.h"
+
 using namespace std;
 
 void read_input_file(char filename[], uint16_t &total_rows, uint16_t &total_cols,
