@@ -302,8 +302,8 @@ public:
 								// make the previous cell empty
 								cells[prev_row_same_col] = 1;
 
-								cout << "cell that is being emptied: ";
-								cout << prev_row_same_col << endl;
+								// cout << "cell that is being emptied: ";
+								// cout << prev_row_same_col << endl;
 							}
 						}
 					}
