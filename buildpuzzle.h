@@ -222,11 +222,12 @@ public:
 	void rule_3(int8_t row_or_col) {
 
 		if (row_or_col == 1) {
-			// iterating over each row
+			// iterating over every row
 			for (uint16_t i=0; i<n_rows; i++) {
 				vector<range> eachrow_runranges = row_black_runs[i];
 				uint16_t k = eachrow_runranges.size();
 
+				// iterate over every black run
 				for (uint16_t j=0; j<k; j++) {
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
@@ -265,6 +266,60 @@ public:
 							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
 								// make the next cell empty
 								cells[look_at_cell+1] = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (row_or_col == 2) {
+			// iterating over every column
+			for (uint16_t i=0; i<n_cols; i++) {
+				vector<range> eachcol_runranges = col_black_runs[i];
+				uint16_t k = eachcol_runranges.size();
+
+				// iterating over every black run
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachcol_runranges[j].first;
+					uint16_t end = eachcol_runranges[j].second;
+
+					if (start != 0) {
+						// looks at j'th column and start'th row
+						uint16_t look_at_cell = start*n_cols + j;
+						uint16_t prev_row_same_col = (start-1)*n_cols + j;
+						uint16_t next_row_same_col = (start+1)*n_cols + j;
+
+						if (start == n_rows-1) {
+							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
+								// make the previous cell empty
+								cells[prev_row_same_col] = 1;
+							}
+						}
+						else {
+							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
+								&& cells[next_row_same_col] != 0) {
+								// make the previous cell empty
+								cells[prev_row_same_col] = 1;
+							}
+						}
+					}
+					if (end != n_rows-1) {
+						// looks at j'th column and end'th row
+						uint16_t look_at_cell = end*n_cols + j;
+						uint16_t prev_row_same_col = (end-1)*n_cols + j;
+						uint16_t next_row_same_col = (end+1)*n_cols + j;
+
+						if (end != 0) {
+							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
+								&& cells[next_row_same_col] != 0) {
+								// make the next cell empty
+								cells[next_row_same_col] = 1;
+							}
+						}
+						else {
+							if (cells[look_at_cell] == 0 && cells[next_row_same_col] != 0) {
+								// make the next cell empty 
+								cells[next_row_same_col] = 1;
 							}
 						}
 					}
