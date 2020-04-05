@@ -79,5 +79,13 @@ int main(int argc, char *argv[]){
 	// create nonogram object
 	Puzzle nonogram(row_dim, col_dim, rows, columns);
 
+	nonogram.initialize_run_ranges();
+
+	nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+	cout << " CHECK COLS:" << endl;
+
+	nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
 	return 0;
 }
