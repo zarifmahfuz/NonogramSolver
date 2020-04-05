@@ -36,7 +36,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 #define DISPLAY_HEIGHT 320
 
 //currently hardcoded puzzle size
-int puzzle_size = 5;
+int puzzle_size = 20;
 int square_size;
 //create an array to hold fillmode of each square
 // X coordinate first, then Y
@@ -57,6 +57,9 @@ void setup() {
   tft.fillScreen(TFT_BLUE);
 }
 
+//touching outside grid clears the puzzle
+void emptyGrid();
+
 void build() {
 	square_size = DISPLAY_HEIGHT/puzzle_size; //integer division
 	//for centering the puzzle
@@ -64,6 +67,7 @@ void build() {
 	//save start position of X as it is required later on again
 	int startX = (480 - puzzle_size*square_size)/2;
 
+	//iterate through each column and row drawing squares
 	for(int i = 0; i < puzzle_size; i++){
 		int squareX = startX;
 		for(int j = 0; j < puzzle_size; j++){
@@ -82,51 +86,68 @@ void build() {
 }
 
 void processTouch() {
+	//get touch coordinates
 	TSPoint touch = ts.getPoint();
 	pinMode(YP, OUTPUT); 
 	pinMode(XM, OUTPUT); 
 	if (touch.z < MINPRESSURE || touch.z > MAXPRESSURE) {
 		return;
 	}
+	//mapping touch to screen
 	int16_t screen_x = map(touch.y, TS_MINX, TS_MAXX, DISPLAY_WIDTH-1, 0);
 	int16_t screen_y = map(touch.x, TS_MINY, TS_MAXY, DISPLAY_HEIGHT-1, 0);
 
+	//calculates the bounds of the grid
 	int boundY = (320 - puzzle_size*square_size)/2;
 	int boundX = (480 - puzzle_size*square_size)/2;
 
+	//convert the touch into square number in x,y form
 	int touch_squareX = (screen_x-boundX)/square_size;
 	int touch_squareY = (screen_y-boundY)/square_size;
 	
+	//if touch is outside grid, clear the puzzle
 	if((screen_x < boundX)||(screen_x > 480 - boundX)){
+		emptyGrid();
 		return;
 	}
 
 	if((screen_y < boundY)||(screen_y > 320 - boundY)){
+		emptyGrid();
 		return;
 	}
 
+	//alternate the color of the square
 	if(squares[touch_squareX][touch_squareY] == 0){
 		squares[touch_squareX][touch_squareY] = 1;
+		//proper positioning needs to be calculated before drawing a rectangle
 		tft.fillRect(boundX + touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_BLACK);
 		tft.drawRect(boundX +touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_BLACK);
 	} 
 	else{
 		squares[touch_squareX][touch_squareY] = 0;
+		//proper positioning needs to be calculated before drawing a rectangle
 		tft.fillRect(boundX +touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_WHITE);
 		tft.drawRect(boundX +touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_BLACK);
 	}
 	delay(500);
 }
 
-int main() {
-	setup();
+void emptyGrid(){
+	//initialize an empty grid by iterating through the array
 	for(int i = 0; i < puzzle_size; i++){
 		for(int j = 0; j < puzzle_size; j++){
 			squares[j][i] = 0;
-		}	
+		}
 	}
-
+	//draw the grid
 	build();
+}
+
+
+int main() {
+	setup();
+	emptyGrid();
+	
 	while(true){
 		processTouch();
 	}
