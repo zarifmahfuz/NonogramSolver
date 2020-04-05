@@ -188,7 +188,7 @@ public:
 				// counter represents the current row number
 				uint16_t counter = 0;
 
-				while (i<n_rows*n_cols) {
+				while (counter < n_rows) {
 					// IF A CELL IS UNKNOWN
 					if (cells[i] == -1) {
 						vector<range> each_col_black_runs = col_black_runs[j];
@@ -209,7 +209,7 @@ public:
 								cells[i] = 1;
 							}
 						}
-						i = i + n_rows;
+						i = i + n_cols;
 						counter++;
 					}
 				}
@@ -311,25 +311,25 @@ public:
 				// counter represents the current row number
 				uint16_t counter = 0;
 
-				while (i<n_rows*n_cols) {
+				while (counter<n_rows) {
 					if (cells[i] == -1) {
 						// this rule only applies if we are not in the first/last row
 						if (counter > 0 && counter < n_rows-1) {
-							if (cells[i-n_rows]==0 && cells[i+n_rows]==0) {
+							if (cells[i-n_cols]==0 && cells[i+n_cols]==0) {
 
-								uint16_t go_up = i - n_rows;
-								uint16_t go_down = i + n_rows;
+								uint16_t go_up = i - n_cols;
+								uint16_t go_down = i + n_cols;
 								uint16_t counter_up = 0;
 								uint16_t counter_down = 0;
 
 								while ((go_up>=0 && cells[go_up]==0) || (go_down<n_rows*n_cols && cells[go_down]==0)) {
 									
 									if (go_up>=0 && cells[go_up]==0) {
-										go_up -= n_rows;
+										go_up -= n_cols;
 										counter_up += 1;
 									}
 									if (go_down<n_rows*n_cols && cells[go_down]==0) {
-										go_down += n_rows;
+										go_down += n_cols;
 										counter_down += 1;
 									}
 								}
@@ -343,7 +343,7 @@ public:
 					}
 					// MOVE TO THE NEXT ROW
 					counter++;
-					i = i + n_rows;
+					i = i + n_cols;
 				}
 
 			}
