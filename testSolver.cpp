@@ -113,6 +113,8 @@ int main(int argc, char *argv[]){
 	nonogram.rule_4(1);
 	nonogram.rule_4(2);
 
+	cout << "solved_indicator: " << nonogram.solved_indicator << endl;
+
 	// rule 1.4 does not apply to the state of the puzzle at the end of 
 	// rule 1.3, so the output of this for loop should be the same as the prev one
 	// for (uint16_t i=0; i<row_dim*col_dim; i++) {

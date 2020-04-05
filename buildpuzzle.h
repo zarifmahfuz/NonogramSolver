@@ -21,6 +21,9 @@ public:
 	vector<vector<range>> row_black_runs;
 	vector<vector<range>> col_black_runs;
 
+	// if solved_indicator > n_rows * n_cols, we have solved the puzzle
+	uint16_t solved_indicator;
+
 	// Constructor
 	Puzzle(uint16_t rows, uint16_t cols, vector<vector<uint16_t>> row_restrictions,
 		vector<vector<uint16_t>> col_restrictions) {
@@ -34,6 +37,9 @@ public:
 
 		n_rows = rows;
 		n_cols = cols;
+
+		// initialize the solve counter
+		solved_indicator = 0;
 	}
 
 	// this method initializes run ranges for each black run in each row/column
@@ -162,16 +168,20 @@ public:
 					if (k == 0) {
 						// if an entire row has no black runs, every cell in that row should be empty
 						cells[i] = 1;
+						solved_indicator++;
 					}
 					else if (curr_col >= 0 && curr_col<each_row_black_runs[0].first) {
 						cells[i] = 1;
+						solved_indicator++;
 					}
 					else if (each_row_black_runs[k-1].second < curr_col && curr_col < n_cols) {
 						cells[i] = 1;
+						solved_indicator++;
 					}
 					for (uint16_t j=0; j<k-1; j++) {
 						if (each_row_black_runs[j].second < curr_col && curr_col < each_row_black_runs[j+1].first) {
 							cells[i] = 1;
+							solved_indicator++;
 						}
 					}
 				}
@@ -198,16 +208,20 @@ public:
 						if (k == 0) {
 							// if an entire col has no black runs, every cell in that col should be empty
 							cells[i] = 1;
+							solved_indicator++;
 						}
 						else if (counter >= 0 && counter < each_col_black_runs[0].first) {
 							cells[i] = 1;
+							solved_indicator++;
 						}
 						else if (each_col_black_runs[k-1].second < counter && counter < n_rows) {
 							cells[i] = 1;
+							solved_indicator++;
 						}
 						for (uint16_t m=0; m<k-1; m++) {
 							if (each_col_black_runs[m].second < counter && counter < each_col_black_runs[m+1].first) {
 								cells[i] = 1;
+								solved_indicator++;
 							}
 						}
 					}
@@ -241,12 +255,14 @@ public:
 							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] != 0) {
 								// make the previous cell empty
 								cells[look_at_cell-1] = 1;
+								solved_indicator++;
 							}
 						}
 						else {
 							if (cells[look_at_cell]==0 && cells[look_at_cell-1] != 0 && cells[look_at_cell+1] != 0) {
 								// make the previous cell empty
 								cells[look_at_cell-1] = 1;
+								solved_indicator++;
 							}
 						}
 					}
@@ -259,6 +275,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] !=0 && cells[look_at_cell+1] != 0) {
 								// make the next cell empty
 								cells[look_at_cell+1] = 1;
+								solved_indicator++;
 							}
 							
 						}
@@ -267,6 +284,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
 								// make the next cell empty
 								cells[look_at_cell+1] = 1;
+								solved_indicator++;
 							}
 						}
 					}
@@ -294,6 +312,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
 								// make the previous cell empty
 								cells[prev_row_same_col] = 1;
+								solved_indicator++;
 							}
 						}
 						else {
@@ -301,6 +320,7 @@ public:
 								&& cells[next_row_same_col] != 0) {
 								// make the previous cell empty
 								cells[prev_row_same_col] = 1;
+								solved_indicator++;
 
 								// cout << "cell that is being emptied: ";
 								// cout << prev_row_same_col << endl;
@@ -318,12 +338,14 @@ public:
 								&& cells[next_row_same_col] != 0) {
 								// make the next cell empty
 								cells[next_row_same_col] = 1;
+								solved_indicator++;
 							}
 						}
 						else {
 							if (cells[look_at_cell] == 0 && cells[next_row_same_col] != 0) {
 								// make the next cell empty 
 								cells[next_row_same_col] = 1;
+								solved_indicator++;
 							}
 						}
 					}
@@ -399,6 +421,7 @@ public:
 							if (counter_left + counter_right + 1 > max_length) {
 								// MAKE THE CURRENT CELL EMPTY!
 								cells[i] = 1;
+								solved_indicator++;
 							}
 						}
 					}
@@ -456,6 +479,7 @@ public:
 								if (counter_up + counter_down + 1 > max_length) {
 									// MAKE THE CURRENT CELL EMPTY!
 									cells[i] = 1;
+									solved_indicator++;
 								}
 							}
 						}
