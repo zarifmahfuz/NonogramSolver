@@ -142,7 +142,9 @@ public:
 		}
 	}
 
-	void check_overlap();
+	// checks overlap lol 
+	void check_overlap(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
+	vector<vector<range>> *black_runs, bool isCol);
 
 	// implementing rule 1.2
 	// not quite sure if we can apply a rule to both a row and a col at the same time
