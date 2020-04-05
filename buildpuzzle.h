@@ -142,7 +142,6 @@ public:
 		}
 	}
 
-	// checks overlap lol 
 	void check_overlap(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
 	vector<vector<range>> *black_runs, bool isCol);
 
@@ -211,9 +210,9 @@ public:
 								cells[i] = 1;
 							}
 						}
-						i = i + n_cols;
-						counter++;
 					}
+					i = i + n_cols;
+					counter++;
 				}
 			}
 		}
