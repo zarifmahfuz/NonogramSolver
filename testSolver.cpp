@@ -91,9 +91,22 @@ int main(int argc, char *argv[]){
 	nonogram.rule_2(1);
 	nonogram.rule_2(2);
 
+	// at the end of rule 1.2, cells 12, 17 should be empty
 	// uncomment for verification of rule 1.2
 	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
 	// 	cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
+	// }
+
+	// apply rule 1.3 to the puzzle now
+	nonogram.rule_3(1);
+	nonogram.rule_3(2);
+
+	// at the end of rule 1.3 cells 12, 17, 23, 25, 26 should be empty
+	// uncomment for verification of rule 1.3
+	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
+	// 	if (nonogram.cells[i] == 1) {
+	// 		cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
+	// 	}
 	// }
 
 	return 0;
