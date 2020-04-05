@@ -217,6 +217,62 @@ public:
 		}
 	}
 
+	// implementing rule 1.3
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_3(int8_t row_or_col) {
+
+		if (row_or_col == 1) {
+			// iterating over each row
+			for (uint16_t i=0; i<n_rows; i++) {
+				vector<range> eachrow_runranges = row_black_runs[i];
+				uint16_t k = eachrow_runranges.size();
+
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachrow_runranges[j].first;
+					uint16_t end = eachrow_runranges[j].second;
+
+					if (start != 0) {
+						uint16_t look_at_cell = i*n_cols + start;
+
+						// checking for a black run of length 1
+						if (start == n_cols-1) {
+							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] != 0) {
+								// make the previous cell empty
+								cells[look_at_cell-1] = 1;
+							}
+						}
+						else {
+							if (cells[look_at_cell]==0 && cells[look_at_cell-1] != 0 && cells[look_at_cell+1] != 0) {
+								// make the previous cell empty
+								cells[look_at_cell-1] = 1;
+							}
+						}
+					}
+					if (end != n_cols-1) {
+						uint16_t look_at_cell = i*n_cols + end;
+
+						if (end != 0) {
+							
+							// checking for a black run of length 1 
+							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] !=0 && cells[look_at_cell+1] != 0) {
+								// make the next cell empty
+								cells[look_at_cell+1] = 1;
+							}
+							
+						}
+						else {
+							// checking for black run of length 1
+							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
+								// make the next cell empty
+								cells[look_at_cell+1] = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// implementing rule 1.4 
 	// Assumption: When we are looking at cell i, and cell Ci-1 and Ci+1 are coloured
 	// Based on the above assumption, if we color cell i and the length of this black run
