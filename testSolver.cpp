@@ -109,5 +109,17 @@ int main(int argc, char *argv[]){
 	// 	}
 	// }
 
+	// apply rule 1.4 to the puzzle now
+	nonogram.rule_4(1);
+	nonogram.rule_4(2);
+
+	// rule 1.4 does not apply to the state of the puzzle at the end of 
+	// rule 1.3, so the output of this for loop should be the same as the prev one
+	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
+	// 	if (nonogram.cells[i] == 1) {
+	// 		cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
+	// 	}
+	// }
+
 	return 0;
 }
