@@ -133,8 +133,8 @@ public:
 					upper_lim = n_rows - 1 - cumsum;
 				}
 
-				// cout << "Col " << i << ", " << "Restriction " << each_col_restrictions[j]
-				// << ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
+				cout << "Col " << i << ", " << "Restriction " << each_col_restrictions[j]
+				<< ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
 
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
@@ -286,9 +286,9 @@ public:
 
 					if (start != 0) {
 						// looks at j'th column and start'th row
-						uint16_t look_at_cell = start*n_cols + j;
-						uint16_t prev_row_same_col = (start-1)*n_cols + j;
-						uint16_t next_row_same_col = (start+1)*n_cols + j;
+						uint16_t look_at_cell = start*n_cols + i;
+						uint16_t prev_row_same_col = (start-1)*n_cols + i;
+						uint16_t next_row_same_col = (start+1)*n_cols + i;
 
 						if (start == n_rows-1) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
@@ -301,14 +301,17 @@ public:
 								&& cells[next_row_same_col] != 0) {
 								// make the previous cell empty
 								cells[prev_row_same_col] = 1;
+
+								cout << "cell that is being emptied: ";
+								cout << prev_row_same_col << endl;
 							}
 						}
 					}
 					if (end != n_rows-1) {
 						// looks at j'th column and end'th row
-						uint16_t look_at_cell = end*n_cols + j;
-						uint16_t prev_row_same_col = (end-1)*n_cols + j;
-						uint16_t next_row_same_col = (end+1)*n_cols + j;
+						uint16_t look_at_cell = end*n_cols + i;
+						uint16_t prev_row_same_col = (end-1)*n_cols + i;
+						uint16_t next_row_same_col = (end+1)*n_cols + i;
 
 						if (end != 0) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
