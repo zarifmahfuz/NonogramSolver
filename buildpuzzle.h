@@ -226,7 +226,7 @@ public:
 	void rule_4(int8_t row_or_col) {
 
 		if (row_or_col == 1) {
-			// iterating over every row in the puzzle
+			
 			uint16_t curr_row = 0;
 			uint16_t curr_col = 0;
 			uint16_t max_length = 0;
@@ -238,7 +238,7 @@ public:
 					max_length = each_row_restrictions[i];
 				}
 			}
-
+			// iterating over every row in the puzzle
 			for (uint16_t i=0; i<n_rows*n_cols; i++) {
 				if (cells[i] == -1) {
 					
@@ -286,6 +286,66 @@ public:
 						}
 					}
 				}
+			}
+		}
+		else if (row_or_col == 2) {
+
+			// iterate over each column
+			// j represents each column
+			for (uint16_t j=0; j<n_cols; j++) {
+
+				uint16_t max_length = 0;
+				vector<uint16_t> each_col_restrictions = col_restrictions[j];
+
+				// find the max length of a black run in a column
+				for (int i=0; i<each_col_restrictions.size(); i++) {
+					if (each_col_restrictions[i] > max_length) {
+						max_length = each_col_restrictions[i];
+					}
+				}
+
+				// i represents an iterator over every row for each column
+				// i represents the actual index for the "cells" data structure
+				uint16_t i = j;
+
+				// counter represents the current row number
+				uint16_t counter = 0;
+
+				while (i<n_rows*n_cols) {
+					if (cells[i] == -1) {
+						// this rule only applies if we are not in the first/last row
+						if (counter > 0 && counter < n_rows-1) {
+							if (cells[i-n_rows]==0 && cells[i+n_rows]==0) {
+
+								uint16_t go_up = i - n_rows;
+								uint16_t go_down = i + n_rows;
+								uint16_t counter_up = 0;
+								uint16_t counter_down = 0;
+
+								while ((go_up>=0 && cells[go_up]==0) || (go_down<n_rows*n_cols && cells[go_down]==0)) {
+									
+									if (go_up>=0 && cells[go_up]==0) {
+										go_up -= n_rows;
+										counter_up += 1;
+									}
+									if (go_down<n_rows*n_cols && cells[go_down]==0) {
+										go_down += n_rows;
+										counter_down += 1;
+									}
+								}
+
+								if (counter_up + counter_down + 1 > max_length) {
+									// MAKE THE CURRENT CELL EMPTY!
+									cells[i] = 1;
+								}
+							}
+						}
+					}
+					// MOVE TO THE NEXT ROW
+					counter++;
+					i = i + n_rows;
+				}
+
 			}
 		}
 	}
