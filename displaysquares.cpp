@@ -123,6 +123,7 @@ int main() {
 	for(int i = 0; i < puzzle_size; i++){
 		for(int j = 0; j < puzzle_size; j++){
 			squares[j][i] = 0;
+		}	
 	}
 
 	build();
