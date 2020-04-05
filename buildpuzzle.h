@@ -353,6 +353,7 @@ public:
 					max_length = each_row_restrictions[i];
 				}
 			}
+			// cout << "Row " << curr_row << ", Max length: " << max_length << endl;
 			// iterating over every row in the puzzle
 			for (uint16_t i=0; i<n_rows*n_cols; i++) {
 				if (cells[i] == -1) {
@@ -371,6 +372,7 @@ public:
 								max_length = each_row_restrictions[i];
 							}
 						}
+						// cout << "Row " << curr_row << ", Max length: " << max_length << endl;
 					}
 
 					if (curr_col > 0 && curr_col < n_cols - 1) {
@@ -418,6 +420,8 @@ public:
 						max_length = each_col_restrictions[i];
 					}
 				}
+
+				//cout << "Col " << j << ", Max length: " << max_length << endl;
 
 				// i represents an iterator over every row for each column
 				// i represents the actual index for the "cells" data structure
