@@ -129,7 +129,7 @@ void processTouch() {
 		tft.fillRect(boundX +touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_WHITE);
 		tft.drawRect(boundX +touch_squareX * square_size,boundY + touch_squareY * square_size, square_size, square_size, TFT_BLACK);
 	}
-	delay(500);
+	delay(250);
 }
 
 void emptyGrid(){
