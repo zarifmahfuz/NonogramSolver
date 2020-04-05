@@ -83,9 +83,18 @@ int main(int argc, char *argv[]){
 
 	nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 
-	cout << " CHECK COLS:" << endl;
+	//cout << " CHECK COLS:" << endl;
 
 	nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+	// apply rule 1.2 to the puzzle now
+	nonogram.rule_2(1);
+	nonogram.rule_2(2);
+
+	// uncomment for verification of rule 1.2
+	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
+	// 	cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
+	// }
 
 	return 0;
 }
