@@ -217,6 +217,79 @@ public:
 		}
 	}
 
+	// implementing rule 1.4 
+	// Assumption: When we are looking at cell i, and cell Ci-1 and Ci+1 are coloured
+	// Based on the above assumption, if we color cell i and the length of this black run
+	// becomes greater the the maximum length of black run possible in the row/column,
+	// the cell i should be left EMPTY
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_4(int8_t row_or_col) {
+
+		if (row_or_col == 1) {
+			// iterating over every row in the puzzle
+			uint16_t curr_row = 0;
+			uint16_t curr_col = 0;
+			uint16_t max_length = 0;
+			vector<uint16_t> each_row_restrictions = row_restrictions[curr_row];
+
+			// find the max length of a black run in a row
+			for (int i=0; i<each_row_restrictions.size(); i++) {
+				if (each_row_restrictions[i] > max_length) {
+					max_length = each_row_restrictions[i];
+				}
+			}
+
+			for (uint16_t i=0; i<n_rows*n_cols; i++) {
+				if (cells[i] == -1) {
+					
+					curr_col = i%n_cols;
+
+					if (i/n_cols != curr_row) {
+						// we have moved to a new row, update curr_row and find the new max length
+						// of a black run in this row
+						curr_row = i/n_cols;
+						each_row_restrictions = row_restrictions[curr_row];
+						max_length = 0;
+
+						for(int i=0; i<each_row_restrictions.size(); i++) {
+							if (each_row_restrictions[i] > max_length) {
+								max_length = each_row_restrictions[i];
+							}
+						}
+					}
+
+					if (curr_col > 0 && curr_col < n_cols - 1) {
+						if (cells[i-1]==0 && cells[i+1]==0) {
+							uint16_t go_left = i-1;
+							uint16_t go_right = i+1;
+							uint16_t counter_left = 0;
+							uint16_t counter_right = 0;
+
+							// while we are still in the current row and either cells to the left or right are
+							// black
+							while ((go_left%n_cols < curr_col && go_left >= 0 && cells[go_left] == 0)
+								|| (go_right%n_cols > curr_col && go_right < n_rows*n_cols && cells[go_right] == 0)) {
+
+								if (go_left%n_cols < curr_col && go_left >= 0 && cells[go_left] == 0) {
+									go_left -= 1;
+									counter_left += 1;
+								}
+								if (go_right%n_cols > curr_col && go_right < n_rows*n_cols && cells[go_right] == 0) {
+									go_right += 1;
+									counter_right += 1;
+								}
+							}
+							if (counter_left + counter_right + 1 > max_length) {
+								// MAKE THE CURRENT CELL EMPTY!
+								cells[i] = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 };
 
 
