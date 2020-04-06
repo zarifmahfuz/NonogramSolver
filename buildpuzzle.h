@@ -707,11 +707,84 @@ public:
 			}
 		}
 	}
+	uint16_t find_and_insert(uint16_t cell_number, int8_t row_or_col, uint16_t current, vector<range> *set_of_segments) {
+		if (row_or_col == 1) {
+			uint16_t counter_left = 0;
+			uint16_t counter_right = 0;
+			uint16_t go_left = cell_number - 1;
+			uint16_t go_right = cell_number + 1;
+
+			while ((go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) 
+				|| (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0)) {
+
+				if (go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) {
+					go_left -= 1;
+					counter_left -= 1;
+				}
+				if (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0) {
+					go_right += 1;
+					counter_right += 1;
+				}
+			}
+			*set_of_segments.push_back(range(go_left+1, go_right-1));
+			return go_right - 1;
+		}
+	}
+
+	// implementing rule 2.3
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_8(int8_t row_or_col) {
+		if (row_or_col == 1) {
+			for (uint16_t i=0; i<n_rows; i++) {
+				vector<range> eachrow_runranges = row_black_runs[i];
+				uint16_t k = eachrow_runranges.size();
+				vector<range> temp;
+
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachrow_runranges[j];
+					uint16_t end = eachrow_runranges[j];
+
+					uint16_t iter = start;
+					uint16_t look_at_cell = i*n_cols + start;
+
+					while (iter <= end) {
+						if (cells[look_at_cel] == 0) {
+							iter = find_and_insert(look_at_cell, 1, iter, &temp) % n_cols;
+						}
+						else {
+							iter++;
+							look_at_cell++;
+						}
+					}
+
+					for (uint16_t m=0; m<temp.size(); m++) {
+						// earlier black runs
+						if (temp[m].first < start) {
+							if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
+								start = temp[m].second + 2;
+							}
+						}
+						// later black run
+						else {
+							if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
+								end = temp[m].first - 2;
+							}
+						}
+					}
+					// refine the run range for this particular black run
+					eachrow_runranges[j] = range(start, end);
+				}
+				// refine run ranges for the entier row
+				row_black_runs[i] = eachrow_runranges;
+			}
+		}
+	}
 
 
 private:
-	void push_to_colour(int16_t low, int16_t high, uint16_t line);
-	uint16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr);
+	void push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol);
+	uint16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr, uint16_t perpTotal,
+		uint16_t line, bool isCol);
 };
 
 
