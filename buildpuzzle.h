@@ -492,7 +492,109 @@ public:
 			}
 		}
 	}
+	// rule 1.5
+	void expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
+		vector<vector<range>> *black_runs, bool isCol);
 
+	// SECOND PHASE OF RULES
+	// Objective: Refine the ranges of the black runs
+
+	// implementing rule 2.1
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_6(int8_t row_or_col) {
+		if (row_or_col == 1) {
+			// iterating over every row
+			for (uint16_t i=0; i<n_rows; i++) {
+				vector<range> eachrow_runranges = row_black_runs[i];
+				uint16_t k = eachrow_runranges.size();
+
+				// iterating over every black run
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachrow_runranges[j].first;
+					uint16_t end = eachrow_runranges[j].second;
+
+					if (j==0) {
+						// starting black run
+
+						//uint16_t end_next = eachrow_runranges[j+1].second;
+						if (end >= eachrow_runranges[j+1].second) {
+							end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+						}
+					}
+					else if (j==k-1) {
+						// ending black run
+
+						//uint16_t start_prev = eachrow_runranges[j-1].first;
+						if (start <= eachrow_runranges[j-1].first) {
+							start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
+						}
+					}
+					else {
+						// a black run somewhere in the middle
+
+						if (start <= eachrow_runranges[j-1].first) {
+							start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
+						}
+						if (end >= eachrow_runranges[j+1].second) {
+							end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+						}
+					}
+					// refine the run range of this particular black run
+					eachrow_runranges[j] = range(start, end);
+				}
+				// refine the run ranges for all the runs in this particular row
+				row_black_runs[i] = eachrow_runranges;
+			}
+		}
+		else if (row_or_col == 2) {
+			// iterating over every column 
+			for (uint16_t i=0; i<n_cols; i++) {
+				vector<range> eachcol_runranges = col_black_runs[i];
+				uint16_t k = eachcol_runranges.size();
+
+				// iterating over every black run
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachcol_runranges[j].first;
+					uint16_t end = eachcol_runranges[j].second;
+
+					if (j==0) {
+						// starting black run
+
+						//uint16_t end_next = eachcol_runranges[j+1].second;
+						if (end >= eachcol_runranges[j+1].second) {
+							end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+						}
+					}
+					else if (j==k-1) {
+						// ending black run
+
+						//uint16_t start_prev = eachcol_runranges[j-1].first;
+						if (start <= eachcol_runranges[j-1].first) {
+							start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
+						}
+					}
+					else {
+						// a black run somewhere in the middle
+
+						if (start <= eachcol_runranges[j-1].first) {
+							start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
+						}
+						if (end >= eachcol_runranges[j+1].second) {
+							end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+						}
+					}
+					// refine the run range of this particular black run
+					eachcol_runranges[j] = range(start, end);
+				}
+				// refine the run ranges for all the runs in this particular column
+				col_black_runs[i] = eachrow_runranges;
+			}
+		}
+	}
+
+private:
+	void push_to_colour(int16_t low, int16_t high, uint16_t line);
+	uint16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr);
 };
 
 
