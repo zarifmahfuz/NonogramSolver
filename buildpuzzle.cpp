@@ -118,7 +118,7 @@ int16_t Puzzle::find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t inc
 
 // private boi, colour from low to high 
 void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol) {
-	cout << "col: " << line << endl;
+	//cout << "col: " << line << endl;
 	for (int ind = low; ind <= high; ind++) {
 
 		// if the cell hasn't been coloured yet
@@ -131,7 +131,7 @@ void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol
 		if (cells[colind]== -1) {
 			// colour it
 			cells[colind] = 0;
-			cout << colind << endl;
+			//cout << colind << endl;
 			solved_indicator++;
 		}
 	}
@@ -181,8 +181,109 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				// find minimum length 
 				uint16_t minlen = *min_element(runs_in_range.begin(), runs_in_range.end());
 
-				//cout << "ind: " << cellInd << "smallest: " << minlen << endl;
+				if (adjacent_find(runs_in_range.begin(), runs_in_range.end(), not_equal_to<>() ) == runs_in_range.end()) {
+				    // elements in vec are all the same
 
+				    // -1 because it is counted twice
+				    int16_t tally = -1;
+				    int16_t start = celli;
+				    uint16_t end = celli;
+
+				    bool atRightEnd = false;
+				    bool atLeftEnd = false;
+				    // go before until you reach an unknown or a white
+				    while (cells[cellInd] ==0 && start >= -1) {
+				    	tally++;
+				    	//cout << "ran" << " ";
+				    	// move on
+				    	start--;
+				    	if (isCol) {
+							cellInd = n_cols*start +line;
+						}
+						else {
+							cellInd = n_cols*line+start;
+						}
+				    }
+
+				    if (isCol) {
+						cellInd = n_cols*celli +line;
+					}
+					else {
+						cellInd = n_cols*line+celli;
+					}
+				    // go after until you reach an unknown or a white
+				    while (cells[cellInd] == 0 && end <= perpTotal) {
+				    	tally++;
+				    	//cout << "run" << " ";
+				    	// move on
+				    	end++;
+				    	if (isCol) {
+							cellInd = n_cols*end +line;
+						}
+						else {
+							cellInd = n_cols*line+end;
+						}
+				    }
+
+				    // check if you touched the wall
+				    if(end == perpTotal){
+				    	atRightEnd = true;
+				    }
+				    if (start == -1) {
+				    	atLeftEnd = true;
+				    }
+
+				    //cout << cellInd <<endl;
+				    //cout << "tally :" << tally <<endl;
+
+				    // if the tally is the length, we can colour some whites
+				    if (tally == minlen) {
+				    	// whiten the start -1
+				    	if (isCol) {
+				    		// cellInd currently contains the end cell
+				    		
+				    		if (cells[cellInd]== -1 && !atRightEnd) {
+								// colour it
+								cells[cellInd] = 1;
+								solved_indicator++;
+								//cout << cellInd <<endl;
+							}
+						
+
+							// possibly whiten the start
+							cellInd = n_cols*start +line;
+						
+							if (cells[cellInd]== -1 && !atLeftEnd) {
+								// colour it
+								cells[cellInd] = 1;
+								solved_indicator++;
+								//cout << cellInd <<endl;
+							}
+							
+						}
+						else {
+							// cellInd currently contains the end cell
+							if (cells[cellInd]== -1 && !atRightEnd) {
+								// colour it
+								cells[cellInd] = 1;
+								solved_indicator++;
+								//cout << cellInd <<endl;
+							}
+
+							// possibly whiten the start 
+							cellInd = n_cols*line+start;
+							if (cells[cellInd]== -1 && !atLeftEnd) {
+								// colour it
+								cells[cellInd] = 1;
+								solved_indicator++;
+								//cout << cellInd <<endl;
+							}
+							
+						}
+				    }
+				}
+
+				//cout << endl;
 				// expand before?
 				// check to see if there is a white or a wall before the black
 				//cout << "celli: " << celli << "|| minlen: " << minlen << endl;
