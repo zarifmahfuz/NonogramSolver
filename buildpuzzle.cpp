@@ -404,6 +404,8 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 		// iterate thru all runs in the line
 		for (uint16_t runs = 0; runs <runs_per_line; runs++) {
 
+			vector <range> white_segs;
+
 		// TASK 1: Count segments enclosed by whites
 
 			// find low_range: the index of the first nonwhite cell
@@ -433,11 +435,11 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 			}
 
-			// the case where all cells in the line are white
-			if (low_range == perpTotal) {
-				// get out, this rule doesn't apply to this line
-				break; 
-			}
+// the case where all cells in the line are white
+if (low_range == perpTotal) {
+	// get out, this rule doesn't apply to this line
+	break; 
+}
 
 			// find high_range: the index of the last nonwhite cell
 
@@ -466,19 +468,83 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 					high_range_cell = n_cols*line+high_range;
 				}
 			}
+			// black_runs.push_back(range(lower_lim, upper_lim));
 
+			// stores the number of segments enclosed by whites
 			uint16_t white_count = 1;
+			// stores the indices of the segment
+			uint16_t seg_start = low_range_cell;
+			//uint16_t seg_end = low_range_cell;
+
+			bool wasWhite = false;
+
 			// ierate from lowwer cell to highercell to find the number of segments
 			for (uint16_t rising = low_range_cell; rising < high_range_cell; rising++) {
 				// if you find a white cell, count it
-				if (cells[low_range_cell] == 1) {
-					white_count++;
+				if (cells[rising] == 1) {
+					if (!wasWhite) {
+    					white_segs.push_back(range(seg_start, rising-1));
+    					//cout << "pushed: " << seg_start << ", " << rising-1 << endl; 
+    					//cout << endl;
+    					white_count++;
+					}
+					wasWhite= true;
+					seg_start = rising +1;
+				}
+				// the current cell isn't white
+				else if (cells[rising] != 1) {
+					wasWhite = false;
+				}
+				// the last segment
+				if (rising == high_range_cell - 1){
+					white_segs.push_back(range(seg_start, rising));
+					//cout << "pushed: " << seg_start << ", " << rising << endl;
 				}
 			}
 
 		// END OF TASK 1
-			
 
+			// Start looking thru the segments
+			// STEP 1
+			int16_t seg_num = 0;
+
+			// STEP 2
+			uint16_t seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+			// if the the current run doesn't fit in the segment
+			while (seg_len < (*restrictions)[line][runs] && seg_num <white_count) {
+
+				// go to the next segment
+				seg_num++;
+				if (seg_num != white_count){
+					seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+				}
+				
+				else {
+					cout << "should have alr found something?" << endl;
+				}
+			}
+			// change the range of this run accordingly
+			(*black_runs)[line][runs].first = white_segs[seg_num].first;
+
+			// STEP 3
+			seg_num = white_count -1;
+
+			// STEP 4
+			seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+			// if the the current run doesn't fit in the segment
+			while (seg_len < (*restrictions)[line][runs] && seg_num >= 0) {
+
+				// go to the next segment
+				seg_num--;
+				if (seg_num != -1){
+					seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+				}
+				else {
+					cout <<"should have alr found something?"<< endl;
+				}
+			}
+
+			(*black_runs)[line][runs].second = white_segs[seg_num].second;
 
 		}
 	}
