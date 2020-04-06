@@ -591,6 +591,123 @@ public:
 			}
 		}
 	}
+	// implementing rule 2.2
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_7(int8_t row_or_col) {
+		if (row_or_col == 1) {
+			// iterating over every row
+			for (uint16_t i=0; i<n_rows; i++) {
+				vector<range> eachrow_runranges = row_black_runs[i];
+				uint16_t k = eachrow_runranges.size();
+
+				// iterating over every black run
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachrow_runranges[j].first;
+					uint16_t end = eachrow_runranges[j].second;
+
+					if (j==0) {
+						// only need to look at the (end+1)'th cell
+						// need to check if (end+1)'th cell is in the same row
+						uint16_t after_end = i*n_cols + end + 1;
+
+						if (after_end/n_cols == i) {
+							if (cells[after_end] == 0) {
+								end -= 1;
+							}
+						}
+					}
+					else if (j==k-1) {
+						// need to look at the (start-1)'th cell
+						uint16_t before_start = i*n_cols + start - 1;
+
+						// if prev cell is in the same row
+						if (before_start/n_cols == i) {
+							if (cells[before_start] == 0) {
+								start += 1;
+							}
+						}
+					}
+					else {
+						uint16_t before_start = i*n_cols + start - 1;
+
+						// if prev cell is in the same row
+						if (before_start/n_cols == i) {
+							if (cells[before_start] == 0) {
+								start += 1;
+							}
+						}
+						uint16_t after_end = i*n_cols + end + 1;
+						
+						if (after_end/n_cols == i) {
+							if (cells[after_end] == 0) {
+								end -= 1;
+							}
+						}
+					}
+					// refine run range for this particular black run
+					eachrow_runranges[j] = range(start, end);
+				}
+				// refine all run ranges for this particular row
+				row_black_runs[i] = eachrow_runranges;
+			}
+		}
+		else if (row_or_col == 2) {
+			// iterating over every column
+			for (uint16_t i=0; i<n_cols; i++) {
+				vector<range> eachcol_runranges = col_black_runs[i];
+				uint16_t k = eachcol_runranges.size();
+
+				// iterating over every black run in the column 
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachcol_runranges[j].first;
+					uint16_t end = eachcol_runranges[j].second;
+
+					if (j==0) {
+						// first black run
+						uint16_t after_end = (end+1)*n_cols + i;
+
+						// if it's in the same column;
+						if (after_end%n_cols == i) {
+							if (cells[after_end] == 0) {
+								end -= 1;
+							}
+						}
+					}
+					else if (j==k-1) {
+						// last black run
+						uint16_t before_start = (start-1)*n_cols + i;
+
+						if (before_start%n_cols == i) {
+							if (cells[before_start] == 0) {
+								start += 1;
+							}
+						}
+					}
+					else {
+						uint16_t before_start = (start-1)*n_cols + i;
+
+						if (before_start%n_cols == i) {
+							if (cells[before_start] == 0) {
+								start += 1;
+							}
+						}
+						uint16_t after_end = (end+1)*n_cols + i;
+
+						if (after_end%n_cols == i) {
+							if (cells[after_end] == 0) {
+								end -= 1;
+							}
+						}
+					}
+					// refine run range for this particular black run
+					eachcol_runranges[j] = range(start, end);
+				}
+				// refine all run ranges for this particular column
+				col_black_runs[i] = eachcol_runranges;
+			}
+		}
+	}
+
 
 private:
 	void push_to_colour(int16_t low, int16_t high, uint16_t line);
