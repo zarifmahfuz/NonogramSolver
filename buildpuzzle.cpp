@@ -137,84 +137,6 @@ void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol
 	}
 }
 
-void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions, vector<vector<range>> *black_runs, bool isCol) {
-	// iterate thru each line
-	for (uint16_t line = 0; line < total; line++) {
-
-		uint16_t runs_per_line = (*restrictions)[line].size();
-
-		if (runs_per_line >= 3) {
-			// iterate thru all runs in the line
-			// skip the first and last runs because those won't have runs prior or after themselves
-			for (uint16_t runs = 1; runs <runs_per_line-1; runs++) {
-
-				// assume that there is some black
-				bool noBlackBox = false;
-
-				// get index of the startpoint
-				uint16_t startLine = (*black_runs)[line][runs-1].second;
-				uint16_t start = n_cols*line+ startLine;
-				if (isCol) {
-					start = n_cols*startLine+ line;
-				}
-				// iterate thru cells in the line until finding black box
-				while (cells[start] != 0 && startLine < perpTotal) {
-					startLine++;
-
-					if (isCol) {
-						start = n_cols*startLine+ line;
-					}
-					else {
-						start = n_cols*line+ startLine;
-					}
-
-					// you've reached a wall and still found no black
-					if (startLine >= perpTotal ) {
-						noBlackBox = true;
-					}
-					// if you found a black box its position is saved in startLine
-				}
-
-				// if you found no black boxes in the line, go to the next line.
-				if (noBlackBox) {
-					break;
-				}
-
-				// get index of endpoint
-				uint16_t endLine = (*black_runs)[line][runs+1].first;
-				int16_t end = n_cols*line+ endLine;
-				if (isCol) {
-					end = n_cols*endLine+ line;
-				}
-
-				// iterate thru cells in the line backwards until finding black box
-				while (cells[end] != 0 && endLine >= 0) {
-					endLine--;
-
-					if (isCol) {
-						end = n_cols*endLine+ line;
-					}
-					else {
-						end = n_cols*line+ endLine;
-					}
-
-					// if you found a black box its position is saved in endLine
-				}
-				// if you found nothing, or the black box is next to the wall endLine == -1
-
-				// colour everything between startpoint and endpoint
-				push_to_colour(startLine, endLine, line, isCol);
-
-				//change the range of the current run that you just filled in
-				(*black_runs)[line][runs].first = endLine + 1 - (*restrictions)[line][runs];
-				(*black_runs)[line][runs].second = (*restrictions)[line][runs] + startLine -1;
-			}
-		}
-		// if there isn't a minimum of 3 runs in the line, rule won't apply
-	}
-}
-
-
 // Rule 1.5
 // expands black runs near whites or near walls
 // limits black runs to prevent them from exceeding a size they cannot have (otherwise it wouldn't fit)
@@ -392,4 +314,90 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 }
 
 // Rule 3.1
+// colours between black cells that are guaranteed to be an item
+void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions, vector<vector<range>> *black_runs, bool isCol) {
+	// iterate thru each line
+	for (uint16_t line = 0; line < total; line++) {
+
+		uint16_t runs_per_line = (*restrictions)[line].size();
+
+		if (runs_per_line >= 3) {
+			// iterate thru all runs in the line
+			// skip the first and last runs because those won't have runs prior or after themselves
+			for (uint16_t runs = 1; runs <runs_per_line-1; runs++) {
+
+				// assume that there is some black
+				bool noBlackBox = false;
+
+				// get index of the startpoint
+				uint16_t startLine = (*black_runs)[line][runs-1].second;
+				uint16_t start = n_cols*line+ startLine;
+				if (isCol) {
+					start = n_cols*startLine+ line;
+				}
+				// iterate thru cells in the line until finding black box
+				while (cells[start] != 0 && startLine < perpTotal) {
+					startLine++;
+
+					if (isCol) {
+						start = n_cols*startLine+ line;
+					}
+					else {
+						start = n_cols*line+ startLine;
+					}
+
+					// you've reached a wall and still found no black
+					if (startLine >= perpTotal ) {
+						noBlackBox = true;
+					}
+					// if you found a black box its position is saved in startLine
+				}
+
+				// if you found no black boxes in the line, go to the next line.
+				if (noBlackBox) {
+					break;
+				}
+
+				// get index of endpoint
+				uint16_t endLine = (*black_runs)[line][runs+1].first;
+				int16_t end = n_cols*line+ endLine;
+				if (isCol) {
+					end = n_cols*endLine+ line;
+				}
+
+				// iterate thru cells in the line backwards until finding black box
+				while (cells[end] != 0 && endLine >= 0) {
+					endLine--;
+
+					if (isCol) {
+						end = n_cols*endLine+ line;
+					}
+					else {
+						end = n_cols*line+ endLine;
+					}
+
+					// if you found a black box its position is saved in endLine
+				}
+				// if you found nothing, or the black box is next to the wall endLine == -1
+
+				// colour everything between startpoint and endpoint
+				push_to_colour(startLine, endLine, line, isCol);
+
+				//change the range of the current run that you just filled in
+				(*black_runs)[line][runs].first = endLine + 1 - (*restrictions)[line][runs];
+				(*black_runs)[line][runs].second = (*restrictions)[line][runs] + startLine -1;
+			}
+		}
+		// if there isn't a minimum of 3 runs in the line, rule won't apply
+	}
+}
+
+// Rule 3.2
+// modifies the range of a run so that it is only hypothesized to fit somewhere where it actually CAN fit
+void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
+	vector<vector<range>> *black_runs, bool isCol) {
+
+
+
+}
 
