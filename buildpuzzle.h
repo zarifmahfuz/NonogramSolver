@@ -780,6 +780,10 @@ public:
 		}
 	}
 
+	// Rule 3.1
+	void fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
+	vector<vector<range>> *black_runs, bool isCol);
+
 
 private:
 	void push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol);
