@@ -587,7 +587,7 @@ public:
 					eachcol_runranges[j] = range(start, end);
 				}
 				// refine the run ranges for all the runs in this particular column
-				col_black_runs[i] = eachrow_runranges;
+				col_black_runs[i] = eachcol_runranges;
 			}
 		}
 	}
@@ -726,7 +726,7 @@ public:
 					counter_right += 1;
 				}
 			}
-			*set_of_segments.push_back(range(go_left+1, go_right-1));
+			(*set_of_segments).push_back(range(go_left+1, go_right-1));
 			return go_right - 1;
 		}
 	}
@@ -741,14 +741,14 @@ public:
 				vector<range> temp;
 
 				for (uint16_t j=0; j<k; j++) {
-					uint16_t start = eachrow_runranges[j];
-					uint16_t end = eachrow_runranges[j];
+					uint16_t start = eachrow_runranges[j].first;
+					uint16_t end = eachrow_runranges[j].second;
 
 					uint16_t iter = start;
 					uint16_t look_at_cell = i*n_cols + start;
 
 					while (iter <= end) {
-						if (cells[look_at_cel] == 0) {
+						if (cells[look_at_cell] == 0) {
 							iter = find_and_insert(look_at_cell, 1, iter, &temp) % n_cols;
 						}
 						else {
