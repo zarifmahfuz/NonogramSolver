@@ -123,5 +123,13 @@ int main(int argc, char *argv[]){
 	// 	}
 	// }
 
+	// aplpying rule 1.5 on rows and columns,respectively 
+	nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+	cout << " CHECK COLS:" << endl;
+	nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+	cout << " DONE " << endl;
+	
 	return 0;
 }
