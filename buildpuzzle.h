@@ -707,49 +707,34 @@ public:
 			}
 		}
 	}
-	uint16_t find_and_insert(uint16_t cell_number, int8_t row_or_col, uint16_t current, vector<range> *set_of_segments) {
-		if (row_or_col == 1) {
-			uint16_t counter_left = 0;
-			uint16_t counter_right = 0;
-			uint16_t go_left = cell_number - 1;
-			uint16_t go_right = cell_number + 1;
-
-			while ((go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) 
-				|| (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0)) {
-
-				if (go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) {
-					go_left -= 1;
-					counter_left -= 1;
-				}
-				if (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0) {
-					go_right += 1;
-					counter_right += 1;
-				}
-			}
-			(*set_of_segments).push_back(range(go_left+1, go_right-1));
-			return go_right - 1;
-		}
-	}
 
 	// implementing rule 2.3
 	// PARAMETER: apply to row: 1; apply to col: 2
 	void rule_8(int8_t row_or_col) {
 		if (row_or_col == 1) {
+			// iterating over every row
 			for (uint16_t i=0; i<n_rows; i++) {
 				vector<range> eachrow_runranges = row_black_runs[i];
 				uint16_t k = eachrow_runranges.size();
-				vector<range> temp;
 
+				// iterating over every black run in the row
 				for (uint16_t j=0; j<k; j++) {
+					// lower and upper limits of the range for each black run
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
+					// we want to find out all the black segments covered by the range 
+					// of this particular black run and find the starting and ending points
+					// of each black segment; so we have to start by looking at the first
+					// cell covered by the range of this black run
+					vector<range> temp;
 					uint16_t iter = start;
 					uint16_t look_at_cell = i*n_cols + start;
 
 					while (iter <= end) {
 						if (cells[look_at_cell] == 0) {
-							iter = find_and_insert(look_at_cell, 1, iter, &temp) % n_cols;
+							iter = find_and_insert(look_at_cell, 1, iter, &temp);
+							look_at_cell = i*n_cols + iter;
 						}
 						else {
 							iter++;
@@ -757,16 +742,40 @@ public:
 						}
 					}
 
-					for (uint16_t m=0; m<temp.size(); m++) {
-						// earlier black runs
-						if (temp[m].first < start) {
-							if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
-								start = temp[m].second + 2;
+					// iterating over all the black segments covered by the range of black run j
+					// how do i determine if a black segment belongs to an earlier or later run ???
+					// first of all, the length of the black segment must be greater the length
+					// of the black run j
+
+					if (j==0) {
+						// if it's the first black run in the row, only the upper limit of its 
+						// range can get affected
+						if (temp.size() > 0) {
+							if (temp[0].second - temp[0].first + 1 > row_restrictions[i][j]) {
+								end = temp[0].first - 2;
 							}
 						}
-						// later black run
-						else {
-							if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
+					}
+					else if (j==k-1) {
+						// if it's the last black run in the row, only the lower limit of its
+						// range can get affected
+						if (temp.size() > 0) {
+							uint16_t ind = temp.size();
+							if (temp[ind-1].second - temp[ind-1].first + 1 > row_restrictions[i][j]) {
+								start = temp[ind-1].second + 2;
+							}
+						}
+					}
+					else {
+						for (uint16_t m=0; m<temp.size(); m++) {
+							// former black runs 
+							if (temp[m].second < end) {
+								// js = ie + 2
+								start = temp[m].second + 2;
+							}
+							// later black runs
+							else if (temp[m].second > end) {
+								// je = is - 2
 								end = temp[m].first - 2;
 							}
 						}
@@ -774,8 +783,74 @@ public:
 					// refine the run range for this particular black run
 					eachrow_runranges[j] = range(start, end);
 				}
-				// refine run ranges for the entier row
+				// refine run ranges for the entire row
 				row_black_runs[i] = eachrow_runranges;
+			}
+		}
+		else if (row_or_col == 2) {
+			// iterating over every column
+			for (uint16_t i=0; i<n_cols; i++) {
+				vector<range> eachcol_runranges = col_black_runs[i];
+				uint16_t k = eachcol_runranges.size();
+
+				// iterating over every black run in the column
+				for (uint16_t j=0; j<k; j++) {
+					uint16_t start = eachcol_runranges[j].first;
+					uint16_t end = eachcol_runranges[j].second;
+
+					vector<range> temp;
+					uint16_t iter = start;
+					uint16_t look_at_cell = start*n_cols + j;
+
+					while (iter <= end) {
+						if (cells[look_at_cell] == 0) {
+							iter = find_and_insert(look_at_cell, 2, iter, &temp);
+							look_at_cell = iter*n_cols + j;
+						}
+						else {
+							iter++;
+							look_at_cell += n_cols;
+						}
+					}
+
+					if (j==0) {
+						// if its the first black run, only je can be changed
+						if (temp.size() > 0) {
+							if (temp[0].second - temp[0].first + 1 > col_restrictions[i][j]) {
+								// je = is - 2
+								end = temp[0].first - 2;
+							}
+						}
+					}
+					else if (j==k-1) {
+						// if its the last black run, only js can be changed
+						if (temp.size() > 0) {
+							uint16_t ind = temp.size();
+							if (temp[ind-1].second - temp[ind-1].first + 1 > col_restrictions[i][j]) {
+								// js = ie + 2
+								start = temp[ind-1].second + 2;
+							}
+						}
+					}
+					else {
+						for (uint16_t m=0; m<temp.size(); m++) {
+							// former black runs 
+							if (temp[m].second < end) {
+								// js = ie + 2
+								start = temp[m].second + 2;
+							}
+							// later black runs
+							else if (temp[m].second > end) {
+								// je = is - 2
+								end = temp[m].first - 2;
+							}
+						}
+					}
+					// refine the run range for this particular black run
+					eachcol_runranges[j] = range(start, end);
+				}
+				// refine run ranges for the entire column
+				col_black_runs[i] = eachcol_runranges;
 			}
 		}
 	}
@@ -793,6 +868,57 @@ private:
 	void push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol);
 	int16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr, uint16_t perpTotal,
 		uint16_t line, bool isCol);
+
+	/* PARAMETERS: 
+		cell_number: actual cell index of the current cell in the cells vector
+		row_or_col: 1 applies to row, 2 to column
+		current: current row/column number
+		set_of_segments: vector in which all black segments (with starting and ending points) are inserted
+	*/
+	uint16_t find_and_insert(uint16_t cell_number, int8_t row_or_col, uint16_t current, vector<range> *set_of_segments) {
+		if (row_or_col == 1) {
+			//uint16_t counter_left = 0;
+			//uint16_t counter_right = 0;
+			uint16_t go_left = cell_number - 1;
+			uint16_t go_right = cell_number + 1;
+
+			// spreadout in both directions from the current cell position, while staying on the same row
+			// and continue in each direction until a cell is black in each direction
+			while ((go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) 
+				|| (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0)) {
+
+				if (go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) {
+					go_left -= 1;
+					//counter_left += 1;
+				}
+				if (go_right%n_cols > current && go_right < n_rows*n_cols && cells[go_right] == 0) {
+					go_right += 1;
+					//counter_right += 1;
+				}
+			}
+			// computing the column number and then inserting into the array
+			(*set_of_segments).push_back(range((go_left+1)%n_cols, (go_right-1)%n_cols));
+			// returning a cell which is either empty or unknown and we will carry on finding 
+			// segments of black run from that position
+			return go_right % n_cols;
+		}
+		else if (row_or_col == 2) {
+			uint16_t go_up = cell_number - n_cols;
+			uint16_t go_down = cell_number + n_cols;
+
+			while ((go_up>=0 && cells[go_up]==0) || (go_down<n_rows*n_cols && cells[go_down]==0)) {
+				if (go_up>=0 && cells[go_up]==0) {
+					go_up -= n_cols;
+				}
+				if (go_down<n_rows*n_cols && cells[go_down]==0) {
+					go_down += n_cols;
+				}
+			}
+			// computing the row number and then inserting into the array
+			(*set_of_segments).push_back(range((go_up+n_cols)/n_cols, (go_down-n_cols)/n_cols));
+			return (go_down)/n_cols;
+		}
+	}
 };
 
 
