@@ -397,7 +397,90 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
 	vector<vector<range>> *black_runs, bool isCol) {
 
+	 // iterate thru each line
+	for (uint16_t line = 0; line < total; line++) {
+
+		uint16_t runs_per_line = (*restrictions)[line].size();
+		// iterate thru all runs in the line
+		for (uint16_t runs = 0; runs <runs_per_line; runs++) {
+
+		// TASK 1: Count segments enclosed by whites
+
+			// find low_range: the index of the first nonwhite cell
+
+			// get the lower line index
+			int16_t low_range =(*black_runs)[line][runs].first;
+
+			// get the lower cell index
+			uint16_t low_range_cell;
+			if (isCol) {
+				low_range_cell = n_cols*low_range + line;
+			}
+			else {
+				low_range_cell = n_cols*line+low_range;
+			}
+			// trim until you find a cell that is not white
+			while (cells[low_range_cell] == 1 && low_range < perpTotal) {
+
+				low_range++;
+
+				// make sure you're checking the correct cell next iteration
+				if (isCol) {
+					low_range_cell = n_cols*low_range + line;
+				}
+				else {
+					low_range_cell = n_cols*line+low_range;
+				}
+			}
+
+			// the case where all cells in the line are white
+			if (low_range == perpTotal) {
+				// get out, this rule doesn't apply to this line
+				break; 
+			}
+
+			// find high_range: the index of the last nonwhite cell
+
+			// get the high line index
+			int16_t high_range =(*black_runs)[line][runs].second;
+
+			// get the high cell index
+			uint16_t high_range_cell;
+			if (isCol) {
+				high_range_cell = n_cols*high_range + line;
+			}
+			else {
+				high_range_cell = n_cols*line+high_range;
+			}
+
+			// trim until you find a cell that is not white
+			while (cells[high_range_cell] == 1 && high_range >= 0) {
+
+				high_range--;
+
+				// make sure you're checking the correct cell next iteration
+				if (isCol) {
+					high_range_cell = n_cols*high_range + line;
+				}
+				else {
+					high_range_cell = n_cols*line+high_range;
+				}
+			}
+
+			uint16_t white_count = 1;
+			// ierate from lowwer cell to highercell to find the number of segments
+			for (uint16_t rising = low_range_cell; rising < high_range_cell; rising++) {
+				// if you find a white cell, count it
+				if (cells[low_range_cell] == 1) {
+					white_count++;
+				}
+			}
+
+		// END OF TASK 1
+			
 
 
+		}
+	}
 }
 
