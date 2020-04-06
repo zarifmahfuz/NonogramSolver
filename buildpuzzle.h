@@ -783,7 +783,7 @@ public:
 
 private:
 	void push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol);
-	uint16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr, uint16_t perpTotal,
+	int16_t find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t incr_or_decr, uint16_t perpTotal,
 		uint16_t line, bool isCol);
 };
 
