@@ -878,6 +878,7 @@ public:
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
+					// rj not overlapping with rj-1
 					if (j > 0) {
 						// if (j-1)e < js; j's range does not overlap with j-1's range
 						if (eachrow_runranges[j-1].second < start) {
@@ -897,12 +898,12 @@ public:
 								end = start + row_restrictions[i][j] - 1;
 
 								// leave cells js-1 and je+1 empty
-								cells[i*n_cols+start-1] = 0;
+								cells[i*n_cols+start-1] = 1;
 								solved_indicator += 1;
 
 								// if the (end+1)'th cell is in the same row
 								if ((i*n_cols + end + 1)/n_cols == i) {
-									cells[i*n_cols+end+1] = 0;
+									cells[i*n_cols+end+1] = 1;
 									solved_indicator += 1;
 								}
 								
@@ -964,7 +965,7 @@ public:
 
 								while (iter_2 < temp.size()) {
 									if (temp[iter_2].second - start_0 + 1 > row_restrictions[i][j]) {
-										end = temp[iter_2].second - 2;
+										end = temp[iter_2].first - 2;
 										break;
 									}
 									else {
@@ -972,13 +973,101 @@ public:
 									}
 								}
 							}
-
 						}
 					}
+					// rj not overlapping with rj+1
+					if (j < k-1) {
+						// if (j+1)s > je, rj does not overlap with rj+1
+						if (eachrow_runranges[j+1].first > end) {
+
+							// CASE 1: Crje is coloured
+							if (cells[i*n_cols+end] == 0) {
+								// length of this black run
+								//uint16_t length_of_j = row_restrictions[i][j];
+								for (uint16_t m=end-1; m >= end-row_restrictions[i][j] + 1; m--) {
+									// COLOUR THE CELLS
+									cells[i*n_cols+m] = m;
+									solved_indicator++;
+								}
+								// refine the run range of this black run
+								// js = je - LBj + 1
+								start = end - row_restrictions[i][j] + 1;
+
+								// leave cells js-1 and je+1 empty
+								cells[i*n_cols+end+1] = 1;
+								solved_indicator++;
+
+								// if (start-1)'th cell is in the same row
+								if (start - 1 > 0) {
+									cells[i*n_cols+start-1] = 1;
+									solved_indicator++;
+								}
+								// if rj-1 overlaps with rj
+								if (j > 0) {
+									if (eachrow_runranges[j-1].second > start) {
+										// (j-1)e = js - 2;
+										eachrow_runranges[j-1].second = start - 2;
+									}
+								}
+								if (eachrow_runranges[j+1].first == end + 1) {
+									eachrow_runranges[j+1].first = end + 2;
+								}
+							}
+							// CASE 2
+							for (uint16_t n=end; n > start; n--) {
+								// if an empty cell appears before a black or unknown cell 
+								if (cells[i*n_cols+n] != 1 && cells[i*n_cols+n-1] == 1) {
+									// js = n-1+1
+									start = n;
+								}
+							}
+							// CASE 3
+							uint16_t iter = start;
+							vector<range> temp;
+							while (iter <= end) {
+								if (cells[i*n_cols+iter] == 0) {
+									// start of a black segment
+									uint16_t start_seg = iter;
+									while (iter <= end && cells[i*n_cols+iter] == 0) {
+										iter++;
+									}
+									uint16_t end_seg = iter - 1;
+
+									// insert the start and end positions of this black segments
+									// in the set of all black segments in the run range of j
+									temp.push_back(range(start_seg, end_seg));
+								}
+								else {
+									iter++;
+								}
+							}
+							if (temp.size() > 2) {
+								uint16_t b = temp.size();
+								uint16_t end_2 = temp[b-1].second;
+								uint16_t iter_2 = b - 2;
+
+								while (iter_2 >= 0) {
+									if (end_2 - temp[iter_2].first + 1 > row_restrictions[i][j]) {
+										start = temp[iter_2].second + 2;
+										break;
+									}
+									else {
+										iter_2++;
+									}
+								}
+							}
+						}
+					}
+					eachrow_runranges[j] = range(start, end);
 				}
+				row_black_runs[i] = eachrow_runranges;
 			}
 		}
+		else if (row_or_col == 2) {
+			
+		}
 	}
+	
 
 
 
