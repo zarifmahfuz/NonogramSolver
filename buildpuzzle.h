@@ -863,6 +863,124 @@ public:
 	void mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<uint16_t>> *restrictions,
 	vector<vector<range>> *black_runs, bool isCol);
 
+	// implementing rule 3.3
+	// PARAMETER: apply to row: 1; apply to col: 2
+	void rule_11(int8_t row_or_col) {
+		if (row_or_col == 1) {
+			// iterating over each row
+			for (uint16_t i=0; i<n_rows; i++) {
+				vector<range> eachrow_runranges = row_black_runs[i];
+				uint16_t k = eachrow_runranges.size();
+
+				// iterating over each black run
+				for (uint16_t j=0; j<k; j++) {
+					// lower and upper limits of the range for each black run
+					uint16_t start = eachrow_runranges[j].first;
+					uint16_t end = eachrow_runranges[j].second;
+
+					if (j > 0) {
+						// if (j-1)e < js; j's range does not overlap with j-1's range
+						if (eachrow_runranges[j-1].second < start) {
+							
+							// CASE 1: Crjs is coloured
+							
+							if (cells[i*n_cols+start] == 0) {
+								// length of this black run
+								//uint16_t length_of_j = row_restrictions[i][j];
+								for (uint16_t m = start+1; m < row_restrictions[i][j]; m++) {
+									// COLOUR THE CELL
+									cells[i*n_cols+m] = 0;
+									solved_indicator++;
+								}
+								// refine the run range of this black run
+								// je = js + LBj - 1
+								end = start + row_restrictions[i][j] - 1;
+
+								// leave cells js-1 and je+1 empty
+								cells[i*n_cols+start-1] = 0;
+								solved_indicator += 1;
+
+								// if the (end+1)'th cell is in the same row
+								if ((i*n_cols + end + 1)/n_cols == i) {
+									cells[i*n_cols+end+1] = 0;
+									solved_indicator += 1;
+								}
+								
+
+								if (j < k-1) {
+									if (eachrow_runranges[j+1].first <= end) {
+										// run range of j+1 overlaps with j, need to update 
+										// the run range of j+1
+										// (j+1)s = je + 2
+										eachrow_runranges[j+1].first = end + 2;
+									}
+								}
+
+								if (eachrow_runranges[j-1].second == start-1) {
+									eachrow_runranges[j-1].second = start - 2;
+								}
+							}
+
+							// CASE 2
+							for (uint16_t n=0; n < end-1; n++) {
+								if (cells[i*n_cols+n]!=1 && cells[i*n_cols+n+1]==1) {
+									// if an empty cell appears after a black cell in the run range of j
+									// je = n+1 - 1
+									end = n;
+									break;
+								}
+							}
+
+							// CASE 3
+							uint16_t iter = start;
+							vector<range> temp;
+							while (iter <= end) {
+								if (cells[i*n_cols+iter] == 0) {
+									// start of a black segment
+									uint16_t start_seg = iter;
+									while (iter <= end && cells[i*n_cols+iter] == 0) {
+										iter++;
+									}
+									uint16_t end_seg = iter - 1;
+									// if (iter > end) {
+									// 	end_2 = end;
+									// }
+									// else {
+									// 	end_2 = iter - 1;
+									// }
+
+									// insert the start and end positions of this black segments
+									// in the set of all black segments in the run range of j
+									temp.push_back(range(start_seg, end_seg));
+								}
+								else {
+									iter++;
+								}
+							}
+							if (temp.size() >= 2) {
+								//uint16_t length_of_j = row_restrictions[i][j];
+								uint16_t start_0 = temp[0].first;
+								uint16_t iter_2 = 1;
+
+								while (iter_2 < temp.size()) {
+									if (temp[iter_2].second - start_0 + 1 > row_restrictions[i][j]) {
+										end = temp[iter_2].second - 2;
+										break;
+									}
+									else {
+										iter_2++;
+									}
+								}
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+
+
 
 private:
 	void push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol);
