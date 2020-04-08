@@ -138,6 +138,10 @@ int main(int argc, char *argv[]){
 	nonogram.rule_7(1); 
 	nonogram.rule_7(2);
 
+	// applying rule 2.3
+	nonogram.rule_8(1);
+	nonogram.rule_8(2);
+
 
 
 	// applying rule 3.1

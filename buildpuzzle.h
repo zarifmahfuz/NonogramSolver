@@ -415,7 +415,7 @@ public:
 
 					if (curr_col > 0 && curr_col < n_cols - 1) {
 						if (cells[i-1]==0 && cells[i+1]==0) {
-							uint16_t go_left = i-1;
+							int16_t go_left = i-1;
 							uint16_t go_right = i+1;
 							uint16_t counter_left = 0;
 							uint16_t counter_right = 0;
@@ -475,7 +475,7 @@ public:
 						if (counter > 0 && counter < n_rows-1) {
 							if (cells[i-n_cols]==0 && cells[i+n_cols]==0) {
 
-								uint16_t go_up = i - n_cols;
+								int16_t go_up = i - n_cols;
 								uint16_t go_down = i + n_cols;
 								uint16_t counter_up = 0;
 								uint16_t counter_down = 0;
@@ -754,65 +754,80 @@ public:
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
-					// we want to find out all the black segments covered by the range 
-					// of this particular black run and find the starting and ending points
-					// of each black segment; so we have to start by looking at the first
-					// cell covered by the range of this black run
-					vector<range> temp;
-					uint16_t iter = start;
-					uint16_t look_at_cell = i*n_cols + start;
+					if (k > 1) {
+						// we want to find out all the black segments covered by the range 
+						// of this particular black run and find the starting and ending points
+						// of each black segment; so we have to start by looking at the first
+						// cell covered by the range of this black run
+						vector<range> temp;
+						uint16_t iter = start;
+						uint16_t look_at_cell = i*n_cols + start;
+						uint16_t curr_row = i;
 
-					while (iter <= end) {
-						if (cells[look_at_cell] == 0) {
-							iter = find_and_insert(look_at_cell, 1, iter, &temp);
-							look_at_cell = i*n_cols + iter;
+						while (iter <= end && curr_row == i) {
+							if (cells[look_at_cell] == 0) {
+								iter = find_and_insert(look_at_cell, 1, iter, &temp, curr_row);
+								look_at_cell = i*n_cols + iter;
+							}
+							else {
+								iter++;
+								look_at_cell++;
+							}
+						}
+
+						// cout << "Row: " << i << ", Restriction: " << row_restrictions[i][j] << ", N_BlackSegs: "
+						// << temp.size() << endl;
+						// for (uint16_t l=0; l<temp.size(); l++) {
+						// 	cout << "Black Seg " << l+1 << ", start: " << temp[l].first << ", end: " 
+						// 	<< temp[l].second << endl;
+						// }
+
+						// iterating over all the black segments covered by the range of black run j
+						// how do i determine if a black segment belongs to an earlier or later run ???
+						// first of all, the length of the black segment must be greater the length
+						// of the black run j
+
+						if (j==0) {
+							// if it's the first black run in the row, only the upper limit of its 
+							// range can get affected
+							if (temp.size() > 0) {
+								if (temp[0].second - temp[0].first + 1 > row_restrictions[i][j]) {
+									end = temp[0].first - 2;
+								}
+							}
+						}
+						else if (j==k-1) {
+							// if it's the last black run in the row, only the lower limit of its
+							// range can get affected
+							if (temp.size() > 0) {
+								uint16_t ind = temp.size();
+								if (temp[ind-1].second - temp[ind-1].first + 1 > row_restrictions[i][j]) {
+									start = temp[ind-1].second + 2;
+								}
+							}
 						}
 						else {
-							iter++;
-							look_at_cell++;
-						}
-					}
-
-					// iterating over all the black segments covered by the range of black run j
-					// how do i determine if a black segment belongs to an earlier or later run ???
-					// first of all, the length of the black segment must be greater the length
-					// of the black run j
-
-					if (j==0) {
-						// if it's the first black run in the row, only the upper limit of its 
-						// range can get affected
-						if (temp.size() > 0) {
-							if (temp[0].second - temp[0].first + 1 > row_restrictions[i][j]) {
-								end = temp[0].first - 2;
-							}
-						}
-					}
-					else if (j==k-1) {
-						// if it's the last black run in the row, only the lower limit of its
-						// range can get affected
-						if (temp.size() > 0) {
-							uint16_t ind = temp.size();
-							if (temp[ind-1].second - temp[ind-1].first + 1 > row_restrictions[i][j]) {
-								start = temp[ind-1].second + 2;
-							}
-						}
-					}
-					else {
-						for (uint16_t m=0; m<temp.size(); m++) {
-							// former black runs 
-							if (temp[m].second < end) {
-								// js = ie + 2
-								start = temp[m].second + 2;
-							}
-							// later black runs
-							else if (temp[m].second > end) {
-								// je = is - 2
-								end = temp[m].first - 2;
+							for (uint16_t m=0; m<temp.size(); m++) {
+								if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
+									// former black runs 
+									if (temp[m].second < end) {
+										// js = ie + 2
+										start = temp[m].second + 2;
+									}
+									// later black runs
+									else if (temp[m].second > end) {
+										// je = is - 2
+										end = temp[m].first - 2;
+									}
+								}
 							}
 						}
 					}
 					// refine the run range for this particular black run
 					eachrow_runranges[j] = range(start, end);
+
+					// cout << "Row: " << i << ", Restriction: " << row_restrictions[i][j] << ", Lower Limit: " 
+					// 	<< eachrow_runranges[j].first << ", Upper Limit: " << eachrow_runranges[j].second << endl;
 				}
 				// refine run ranges for the entire row
 				row_black_runs[i] = eachrow_runranges;
@@ -829,56 +844,72 @@ public:
 					uint16_t start = eachcol_runranges[j].first;
 					uint16_t end = eachcol_runranges[j].second;
 
-					vector<range> temp;
-					uint16_t iter = start;
-					uint16_t look_at_cell = start*n_cols + j;
+					if (k > 1) {
+						vector<range> temp;
+						uint16_t iter = start;
+						uint16_t look_at_cell = start*n_cols + i;
+						uint16_t curr_col = i;
 
-					while (iter <= end) {
-						if (cells[look_at_cell] == 0) {
-							iter = find_and_insert(look_at_cell, 2, iter, &temp);
-							look_at_cell = iter*n_cols + j;
+						while (iter <= end && curr_col == i) {
+							if (cells[look_at_cell] == 0) {
+								iter = find_and_insert(look_at_cell, 2, iter, &temp, curr_col);
+								look_at_cell = iter*n_cols + i;
+							}
+							else {
+								iter++;
+								look_at_cell += n_cols;
+								
+								curr_col = look_at_cell % n_cols;
+							}
+						}
+						// cout << "Col: " << i << ", Restriction: " << col_restrictions[i][j] << ", N_BlackSegs: "
+						// << temp.size() << endl;
+						// for (uint16_t l=0; l<temp.size(); l++) {
+						// 	cout << "Black Seg " << l+1 << ", start: " << temp[l].first << ", end: " 
+						// 	<< temp[l].second << endl;
+						// }
+
+						if (j==0) {
+							// if its the first black run, only je can be changed
+							if (temp.size() > 0) {
+								if (temp[0].second - temp[0].first + 1 > col_restrictions[i][j]) {
+									// je = is - 2
+									end = temp[0].first - 2;
+								}
+							}
+						}
+						else if (j==k-1) {
+							// if its the last black run, only js can be changed
+							if (temp.size() > 0) {
+								uint16_t ind = temp.size();
+								if (temp[ind-1].second - temp[ind-1].first + 1 > col_restrictions[i][j]) {
+									// js = ie + 2
+									start = temp[ind-1].second + 2;
+								}
+							}
 						}
 						else {
-							iter++;
-							look_at_cell += n_cols;
-						}
-					}
-
-					if (j==0) {
-						// if its the first black run, only je can be changed
-						if (temp.size() > 0) {
-							if (temp[0].second - temp[0].first + 1 > col_restrictions[i][j]) {
-								// je = is - 2
-								end = temp[0].first - 2;
-							}
-						}
-					}
-					else if (j==k-1) {
-						// if its the last black run, only js can be changed
-						if (temp.size() > 0) {
-							uint16_t ind = temp.size();
-							if (temp[ind-1].second - temp[ind-1].first + 1 > col_restrictions[i][j]) {
-								// js = ie + 2
-								start = temp[ind-1].second + 2;
-							}
-						}
-					}
-					else {
-						for (uint16_t m=0; m<temp.size(); m++) {
-							// former black runs 
-							if (temp[m].second < end) {
-								// js = ie + 2
-								start = temp[m].second + 2;
-							}
-							// later black runs
-							else if (temp[m].second > end) {
-								// je = is - 2
-								end = temp[m].first - 2;
+							for (uint16_t m=0; m<temp.size(); m++) {
+								if (temp[m].second - temp[m].first + 1 > col_restrictions[i][j]) {
+									// former black runs 
+									if (temp[m].second < end) {
+										// js = ie + 2
+										start = temp[m].second + 2;
+									}
+									// later black runs
+									else if (temp[m].second > end) {
+										// je = is - 2
+										end = temp[m].first - 2;
+									}
+								}
 							}
 						}
 					}
 					// refine the run range for this particular black run
 					eachcol_runranges[j] = range(start, end);
+
+					cout << "Col: " << i << ", Restriction: " << col_restrictions[i][j] << ", Lower Limit: " 
+						<< eachcol_runranges[j].first << ", Upper Limit: " << eachcol_runranges[j].second << endl;
 				}
 				// refine run ranges for the entire column
 				col_black_runs[i] = eachcol_runranges;
@@ -1293,13 +1324,15 @@ private:
 		current: current row/column number
 		set_of_segments: vector in which all black segments (with starting and ending points) are inserted
 	*/
-	uint16_t find_and_insert(uint16_t cell_number, int8_t row_or_col, uint16_t current, vector<range> *set_of_segments) {
+	uint16_t find_and_insert(uint16_t cell_number, int8_t row_or_col, uint16_t current, vector<range> *set_of_segments,
+		 uint16_t &locate) {
 		if (row_or_col == 1) {
 			//uint16_t counter_left = 0;
 			//uint16_t counter_right = 0;
 			uint16_t go_left = cell_number - 1;
 			uint16_t go_right = cell_number + 1;
 
+			// uint16_t counter = 0;
 			// spreadout in both directions from the current cell position, while staying on the same row
 			// and continue in each direction until a cell is black in each direction
 			while ((go_left%n_cols < current && go_left >= 0 && cells[go_left] == 0) 
@@ -1313,16 +1346,23 @@ private:
 					go_right += 1;
 					//counter_right += 1;
 				}
+				// counter++;
+				// cout << "counter: " << counter << endl;
 			}
 			// computing the column number and then inserting into the array
 			(*set_of_segments).push_back(range((go_left+1)%n_cols, (go_right-1)%n_cols));
 			// returning a cell which is either empty or unknown and we will carry on finding 
 			// segments of black run from that position
+			//cout << "go_right " << go_right % n_cols << endl;
+			locate = go_right/n_cols;
+
 			return go_right % n_cols;
 		}
 		else if (row_or_col == 2) {
-			uint16_t go_up = cell_number - n_cols;
+			int16_t go_up = cell_number - n_cols;
 			uint16_t go_down = cell_number + n_cols;
+			// cout << "go_up_1: " << go_up << endl;
+			// cout << "go_down_1: " << go_down << endl;
 
 			while ((go_up>=0 && cells[go_up]==0) || (go_down<n_rows*n_cols && cells[go_down]==0)) {
 				if (go_up>=0 && cells[go_up]==0) {
@@ -1332,8 +1372,13 @@ private:
 					go_down += n_cols;
 				}
 			}
+
+			// cout << "go_down_2: " << go_down << endl;
 			// computing the row number and then inserting into the array
 			(*set_of_segments).push_back(range((go_up+n_cols)/n_cols, (go_down-n_cols)/n_cols));
+			locate = go_down % n_cols;
+
+
 			return (go_down)/n_cols;
 		}
 	}
