@@ -126,16 +126,22 @@ int main(int argc, char *argv[]){
 	// aplpying rule 1.5 on rows and columns,respectively 
 	nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 
-	cout << " CHECK COLS:" << endl;
+	// cout << " CHECK COLS:" << endl;
 	nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
-	cout << " DONE " << endl;
+	// cout << " DONE " << endl;
 
 	// applying rule 3.1
 	// on rows
 	nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 	// on cols
 	nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+
+	// appplying 3.2
+	nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+	// on cols
+	// cout << " CHECK COLS:" << endl;
+	nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
 	
 	return 0;
 }
