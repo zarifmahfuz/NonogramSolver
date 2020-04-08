@@ -419,7 +419,6 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 				// cout << endl;
 
 				// if you found nothing, or the black box is next to the wall endLine == -1
-
 				// colour everything between startpoint and endpoint
 				push_to_colour(startLine, endLine, line, isCol);
 
@@ -448,15 +447,24 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 		// iterate thru all runs in the line
 		for (uint16_t runs = 0; runs <runs_per_line; runs++)
 		{
-
 			vector <range> white_segs;
-
 			// TASK 1: Count segments enclosed by whites
 
 			// find low_range: the index of the first nonwhite cell
-
 			// get the lower line index
-			int16_t low_range =(*black_runs)[line][runs].first;
+			int16_t low_range =(*black_runs)[line][runs].first; // rjs, 
+
+			// find high_range: the index of the last nonwhite cell
+			int16_t high_range =(*black_runs)[line][runs].second; // rje 
+
+			// get the high cell index
+			uint16_t high_range_cell;
+			if (isCol) {
+				high_range_cell = n_cols*high_range + line;
+			}
+			else {
+				high_range_cell = n_cols*line+high_range;
+			}
 
 			// get the lower cell index
 			uint16_t low_range_cell;
@@ -466,9 +474,12 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 			else {
 				low_range_cell = n_cols*line+low_range;
 			}
-			// trim until you find a cell that is not white
-			while (cells[low_range_cell] == 1 && low_range < perpTotal) {
 
+			//cout << "starting at: " << low_range_cell << " ending at: " << high_range_cell<<endl;
+
+			// trim until you find a cell that is not white
+			while (cells[low_range_cell] == 1 && low_range <= high_range) {
+				//cout << "whit cell at: " << low_range_cell << endl;
 				low_range++;
 
 				// make sure you're checking the correct cell next iteration
@@ -480,28 +491,18 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 			}
 
-		// the case where all cells in the line are white
-		if (low_range == perpTotal) {
-			// get out, this rule doesn't apply to this line
-			break; 
-		}
+			// cout << "for run: " << (*restrictions)[line][runs] << " in line" << line <<endl;
 
-			// find high_range: the index of the last nonwhite cell
-
-			// get the high line index
-			int16_t high_range =(*black_runs)[line][runs].second;
-
-			// get the high cell index
-			uint16_t high_range_cell;
-			if (isCol) {
-				high_range_cell = n_cols*high_range + line;
-			}
-			else {
-				high_range_cell = n_cols*line+high_range;
+			// the case where all cells in the range are white, which doesn't really make sense
+			// probably will never happen?
+			if (cells[low_range_cell] == 1) {
+				// get out, this rule doesn't apply to this range
+				cout << "everything is white" << endl << endl;
+				continue; 
 			}
 
 			// trim until you find a cell that is not white
-			while (cells[high_range_cell] == 1 && high_range >= 0) {
+			while (cells[high_range_cell] == 1 && high_range >= low_range) {
 
 				high_range--;
 
@@ -513,35 +514,44 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 					high_range_cell = n_cols*line+high_range;
 				}
 			}
-			// black_runs.push_back(range(lower_lim, upper_lim));
+
+			//cout << " || first nonwhite: " << low_range_cell <<endl <<endl;
+			
 
 			// stores the number of segments enclosed by whites
-			uint16_t white_count = 1;
+			uint16_t white_count = 0;
 			// stores the indices of the segment
 			uint16_t seg_start = low_range_cell;
-			//uint16_t seg_end = low_range_cell;
+
 
 			bool wasWhite = false;
 
+			// cout << "range: " << low_range_cell << " - " << high_range_cell <<endl <<endl;
 			// iterate from lower cell to higher cell to find the number of segments
-			for (uint16_t rising = low_range_cell; rising < high_range_cell; rising++)
+			for (uint16_t rising = low_range_cell; rising <= high_range_cell; rising++, low_range++)
 			{
 
+				// cout << "went in?" << rising <<endl;
 				// adjust to appropiate cell
 				if (isCol) {
-					rising = n_cols*rising + line;
-				}
-				else {
-					rising = n_cols*line+rising;
+					rising = n_cols*low_range + line;
 				}
 
 				// if you find a white cell, count it
 				if (cells[rising] == 1) {
 					if (!wasWhite) {
-    					white_segs.push_back(range(seg_start, rising-1));
-    					//cout << "pushed: " << seg_start << ", " << rising-1 << endl; 
-    					//cout << endl;
-    					white_count++;
+						uint16_t uplim;
+						if (isCol) {
+							uplim = rising- n_cols;
+						}
+						else{
+							uplim = rising -1;
+						}
+
+						white_segs.push_back(range(seg_start, uplim));
+						// cout << "pushed: " << seg_start << ", " << uplim << endl; 
+						//cout << endl;
+						white_count++;
 					}
 					wasWhite= true;
 					if (!isCol) {
@@ -557,63 +567,83 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				else if (cells[rising] != 1) {
 					wasWhite = false;
 				}
+
+				
+
 				// the last segment
-				if (rising == high_range_cell - 1){
+				if (rising == high_range_cell){
+					// cout << "added last" <<endl;
 					white_segs.push_back(range(seg_start, rising));
-					//cout << "pushed: " << seg_start << ", " << rising << endl;
+					white_count++;
+					// cout << "pushed: " << seg_start << ", " << rising << endl;
 				}
 
 			}
+
+
+			// cout << " there are #" << white_segs.size() << "," << white_count<< endl << endl;
 
 			// END OF TASK 1
 			// Start looking thru the segments
 			// STEP 1
 			int16_t seg_num = 0;
 
+			uint16_t seg_len;
+			if (isCol) {
+				// get row ind
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +n_cols;
+				seg_len= floor ((seg_len- line)/n_cols) + 1;
+			}
+			else {
+				// get column ind
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+			}
+
 			// STEP 2
-			uint16_t seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
 			// if the the current run doesn't fit in the segment
-			while (seg_len < (*restrictions)[line][runs] && seg_num <white_count) {
+			while (seg_len < (*restrictions)[line][runs] && seg_num < white_count) {
 				// go to the next segment
 				seg_num++;
-				if (seg_num != white_count){
-					seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
-				}
-				
-				else {
-					cout << "should have alr found something?" << endl;
-				}
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
 			}
+
 			// change the range of this run accordingly
 			(*black_runs)[line][runs].first = white_segs[seg_num].first;
-			// save it
+
+			// cout << "rjs: " << (*black_runs)[line][runs].first << endl;
+			// save it for later
 			uint16_t init_seg = seg_num;
 
-			// STEP 3
+
+			// STEP 3, now start from the top 
 			seg_num = white_count -1;
 
+			// get the index
+			if (isCol) {
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +n_cols;
+				seg_len= floor ((seg_len- line)/n_cols) + 1;
+				// cout << "len: " << seg_len <<endl;
+			}
+			else {
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+
+			}
+
+			
 			// STEP 4
-			seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
 			// if the the current run doesn't fit in the segment
 			while (seg_len < (*restrictions)[line][runs] && seg_num >= 0) {
 				// go to the next segment
-				seg_num--;
-				if (seg_num != -1){
-					seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
-				}
-				else {
-					cout <<"should have alr found something?"<< endl;
-				}
+				seg_num--;	
+				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
+				
 			}
 
 			(*black_runs)[line][runs].second = white_segs[seg_num].second;
 
+			// cout << "rje: " << (*black_runs)[line][runs].second <<endl << endl;
 
-
-
-
-
-			// Step 5 yo I feel like I'm doing this wrong help
+			// Step 5
 			// iterate thru remaining segs
 			for (uint16_t seg = init_seg; seg < seg_num; seg++) {
 
@@ -630,34 +660,50 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 					perplinend = (white_segs[seg].second- line*n_cols); 
 				}
 
-				uint16_t tracker = 0;
-				// iterate thru all runs in the line
-				for (uint16_t each_run = 0; each_run < runs_per_line; each_run++) {
-
-					// is the remaining seg enclosed within anything 
-					// other than the already established black run?
-					range my_range = (*black_runs)[line][each_run];
-					if ( my_range.first<= perplinestart && my_range.second >= perplinend) {
-						tracker++;
-					}
+				// get length of the segment
+				if (isCol) {
+					seg_len = white_segs[seg].second - white_segs[seg].first +n_cols;
+					seg_len= floor ((seg_len- line)/n_cols) + 1;
+				}
+				else {
+					seg_len = white_segs[seg].second - white_segs[seg].first +1;
 				}
 
-				// if it isn't covered by others
-				if (tracker < 2) {
-					for (int ind = perplinestart; ind <= perplinend; ind++) {
+				// is the segment smaller than the run?
+				if (seg_len < (*restrictions)[line][runs]) {
 
-						// if the cell hasn't been coloured yet
-						uint16_t colind = n_cols*line+ind;
-						// adjust index accordingly if you're iterating thru columns
-						if (isCol) {
-							colind = n_cols*ind + line;
+					// find if segment covered by any other ranges
+					uint16_t tracker = 0;
+
+					// iterate thru all runs in the line
+					for (uint16_t each_run = 0; each_run < runs_per_line; each_run++) {
+
+						// is the remaining seg enclosed within anything 
+						// other than the already established black run?
+						range my_range = (*black_runs)[line][each_run];
+						if (my_range.first <= perplinestart && my_range.second >= perplinend) {
+							tracker++;
 						}
-						// if the cell hasn't been coloured yet
-						if (cells[colind]== -1) {
-							// colour it
-							cells[colind] = 1;
-							//cout << colind << endl;
-							solved_indicator++;
+					}
+
+					// is it covered by someone else?
+					if (tracker > 1) {
+
+						// colour it white from the segment's start till the segment's end
+						for (int ind = perplinestart; ind <= perplinend; ind++) {
+
+							uint16_t colind = n_cols*line+ind;
+							// adjust index accordingly if you're iterating thru columns
+							if (isCol) {
+								colind = n_cols*ind + line;
+							}
+							// if the cell hasn't been coloured yet
+							if (cells[colind]== -1) {
+								// colour it
+								cells[colind] = 1;
+								// cout << "coloured" << colind << endl;
+								solved_indicator++;
+							}
 						}
 					}
 				}
