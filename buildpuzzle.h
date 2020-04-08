@@ -139,8 +139,8 @@ public:
 					upper_lim = n_rows - 1 - cumsum;
 				}
 
-				cout << "Col " << i << ", " << "Restriction " << each_col_restrictions[j]
-				<< ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
+				// cout << "Col " << i << ", " << "Restriction " << each_col_restrictions[j]
+				// << ", " << "Lower limit: " << lower_lim << ", Upper limit: " << upper_lim << endl;
 
 				black_runs.push_back(range(lower_lim, upper_lim));
 			}
@@ -529,30 +529,32 @@ public:
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
-					if (j==0) {
-						// starting black run
+					if (k > 1) {
+						if (j==0) {
+							// starting black run
 
-						//uint16_t end_next = eachrow_runranges[j+1].second;
-						if (end >= eachrow_runranges[j+1].second) {
-							end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+							//uint16_t end_next = eachrow_runranges[j+1].second;
+							if (end >= eachrow_runranges[j+1].second) {
+								end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+							}
 						}
-					}
-					else if (j==k-1) {
-						// ending black run
+						else if (j==k-1) {
+							// ending black run
 
-						//uint16_t start_prev = eachrow_runranges[j-1].first;
-						if (start <= eachrow_runranges[j-1].first) {
-							start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
+							//uint16_t start_prev = eachrow_runranges[j-1].first;
+							if (start <= eachrow_runranges[j-1].first) {
+								start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
+							}
 						}
-					}
-					else {
-						// a black run somewhere in the middle
+						else {
+							// a black run somewhere in the middle
 
-						if (start <= eachrow_runranges[j-1].first) {
-							start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
-						}
-						if (end >= eachrow_runranges[j+1].second) {
-							end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+							if (start <= eachrow_runranges[j-1].first) {
+								start = eachrow_runranges[j-1].first + row_restrictions[i][j-1] + 1;
+							}
+							if (end >= eachrow_runranges[j+1].second) {
+								end = eachrow_runranges[j+1].second - row_restrictions[i][j+1] - 1;
+							}
 						}
 					}
 					// refine the run range of this particular black run
@@ -573,30 +575,32 @@ public:
 					uint16_t start = eachcol_runranges[j].first;
 					uint16_t end = eachcol_runranges[j].second;
 
-					if (j==0) {
-						// starting black run
+					if (k > 1) {
+						if (j==0) {
+							// starting black run
 
-						//uint16_t end_next = eachcol_runranges[j+1].second;
-						if (end >= eachcol_runranges[j+1].second) {
-							end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+							//uint16_t end_next = eachcol_runranges[j+1].second;
+							if (end >= eachcol_runranges[j+1].second) {
+								end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+							}
 						}
-					}
-					else if (j==k-1) {
-						// ending black run
+						else if (j==k-1) {
+							// ending black run
 
-						//uint16_t start_prev = eachcol_runranges[j-1].first;
-						if (start <= eachcol_runranges[j-1].first) {
-							start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
+							//uint16_t start_prev = eachcol_runranges[j-1].first;
+							if (start <= eachcol_runranges[j-1].first) {
+								start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
+							}
 						}
-					}
-					else {
-						// a black run somewhere in the middle
+						else {
+							// a black run somewhere in the middle
 
-						if (start <= eachcol_runranges[j-1].first) {
-							start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
-						}
-						if (end >= eachcol_runranges[j+1].second) {
-							end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+							if (start <= eachcol_runranges[j-1].first) {
+								start = eachcol_runranges[j-1].first + col_restrictions[i][j-1] + 1;
+							}
+							if (end >= eachcol_runranges[j+1].second) {
+								end = eachcol_runranges[j+1].second - col_restrictions[i][j+1] - 1;
+							}
 						}
 					}
 					// refine the run range of this particular black run
@@ -621,47 +625,53 @@ public:
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
-					if (j==0) {
-						// only need to look at the (end+1)'th cell
-						// need to check if (end+1)'th cell is in the same row
-						uint16_t after_end = i*n_cols + end + 1;
+					if (k != 1) {
+						// run range can only get modified if there is more than one black run
+						if (j==0) {
+							// only need to look at the (end+1)'th cell
+							// need to check if (end+1)'th cell is in the same row
+							uint16_t after_end = i*n_cols + end + 1;
 
-						if (after_end/n_cols == i) {
-							if (cells[after_end] == 0) {
-								end -= 1;
+							if (after_end/n_cols == i) {
+								if (cells[after_end] == 0) {
+									end -= 1;
+								}
 							}
 						}
-					}
-					else if (j==k-1) {
-						// need to look at the (start-1)'th cell
-						uint16_t before_start = i*n_cols + start - 1;
+						else if (j==k-1) {
+							// need to look at the (start-1)'th cell
+							uint16_t before_start = i*n_cols + start - 1;
 
-						// if prev cell is in the same row
-						if (before_start/n_cols == i) {
-							if (cells[before_start] == 0) {
-								start += 1;
+							// if prev cell is in the same row
+							if (before_start/n_cols == i) {
+								if (cells[before_start] == 0) {
+									start += 1;
+								}
 							}
 						}
-					}
-					else {
-						uint16_t before_start = i*n_cols + start - 1;
+						else {
+							uint16_t before_start = i*n_cols + start - 1;
 
-						// if prev cell is in the same row
-						if (before_start/n_cols == i) {
-							if (cells[before_start] == 0) {
-								start += 1;
+							// if prev cell is in the same row
+							if (before_start/n_cols == i) {
+								if (cells[before_start] == 0) {
+									start += 1;
+								}
 							}
-						}
-						uint16_t after_end = i*n_cols + end + 1;
-						
-						if (after_end/n_cols == i) {
-							if (cells[after_end] == 0) {
-								end -= 1;
+							uint16_t after_end = i*n_cols + end + 1;
+							
+							if (after_end/n_cols == i) {
+								if (cells[after_end] == 0) {
+									end -= 1;
+								}
 							}
 						}
 					}
 					// refine run range for this particular black run
 					eachrow_runranges[j] = range(start, end);
+					
+					// cout << "Row: " << i << ", Restriction: " << row_restrictions[i][j] << ", Lower Limit: " 
+					// 	<< eachrow_runranges[j].first << ", Upper Limit: " << eachrow_runranges[j].second << endl;
 				}
 				// refine all run ranges for this particular row
 				row_black_runs[i] = eachrow_runranges;
@@ -678,45 +688,50 @@ public:
 					uint16_t start = eachcol_runranges[j].first;
 					uint16_t end = eachcol_runranges[j].second;
 
-					if (j==0) {
-						// first black run
-						uint16_t after_end = (end+1)*n_cols + i;
+					if (k > 1) {
+						if (j==0) {
+							// first black run
+							uint16_t after_end = (end+1)*n_cols + i;
 
-						// if it's in the same column;
-						if (after_end%n_cols == i) {
-							if (cells[after_end] == 0) {
-								end -= 1;
+							// if it's in the same column;
+							if (after_end%n_cols == i) {
+								if (cells[after_end] == 0) {
+									end -= 1;
+								}
 							}
 						}
-					}
-					else if (j==k-1) {
-						// last black run
-						uint16_t before_start = (start-1)*n_cols + i;
+						else if (j==k-1) {
+							// last black run
+							uint16_t before_start = (start-1)*n_cols + i;
 
-						if (before_start%n_cols == i) {
-							if (cells[before_start] == 0) {
-								start += 1;
+							if (before_start%n_cols == i) {
+								if (cells[before_start] == 0) {
+									start += 1;
+								}
 							}
 						}
-					}
-					else {
-						uint16_t before_start = (start-1)*n_cols + i;
+						else {
+							uint16_t before_start = (start-1)*n_cols + i;
 
-						if (before_start%n_cols == i) {
-							if (cells[before_start] == 0) {
-								start += 1;
+							if (before_start%n_cols == i) {
+								if (cells[before_start] == 0) {
+									start += 1;
+								}
 							}
-						}
-						uint16_t after_end = (end+1)*n_cols + i;
+							uint16_t after_end = (end+1)*n_cols + i;
 
-						if (after_end%n_cols == i) {
-							if (cells[after_end] == 0) {
-								end -= 1;
+							if (after_end%n_cols == i) {
+								if (cells[after_end] == 0) {
+									end -= 1;
+								}
 							}
 						}
 					}
 					// refine run range for this particular black run
 					eachcol_runranges[j] = range(start, end);
+
+					// cout << "Col: " << i << ", Restriction: " << col_restrictions[i][j] << ", Lower Limit: " 
+					// 	<< eachcol_runranges[j].first << ", Upper Limit: " << eachcol_runranges[j].second << endl;
 				}
 				// refine all run ranges for this particular column
 				col_black_runs[i] = eachcol_runranges;
