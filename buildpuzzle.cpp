@@ -184,6 +184,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 
 				if (adjacent_find(runs_in_range.begin(), runs_in_range.end(), not_equal_to<>() ) == runs_in_range.end()) {
 				    // elements in vec are all the same
+				    // cout << "are same" << line << endl;
 
 				    // -1 because it is counted twice
 				    int16_t tally = -1;
@@ -193,7 +194,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				    bool atRightEnd = false;
 				    bool atLeftEnd = false;
 				    // go before until you reach an unknown or a white
-				    while (cells[cellInd] ==0 && start >= -1) {
+				    while (cells[cellInd] == 0 && start > -1) {
 				    	tally++;
 				    	//cout << "ran" << " ";
 				    	// move on
@@ -212,8 +213,9 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 					else {
 						cellInd = n_cols*line+celli;
 					}
+
 				    // go after until you reach an unknown or a white
-				    while (cells[cellInd] == 0 && end <= perpTotal) {
+				    while (cells[cellInd] == 0 && end < perpTotal) {
 				    	tally++;
 				    	//cout << "run" << " ";
 				    	// move on
@@ -226,11 +228,14 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 						}
 				    }
 
+				    // cout << "end: " << end << endl;
 				    // check if you touched the wall
 				    if(end == perpTotal){
+				    	// cout << "touched Rwall" << endl;
 				    	atRightEnd = true;
 				    }
 				    if (start == -1) {
+				    	// cout << "touched Lwall" << endl;
 				    	atLeftEnd = true;
 				    }
 
