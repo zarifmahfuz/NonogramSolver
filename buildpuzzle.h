@@ -908,8 +908,8 @@ public:
 					// refine the run range for this particular black run
 					eachcol_runranges[j] = range(start, end);
 
-					cout << "Col: " << i << ", Restriction: " << col_restrictions[i][j] << ", Lower Limit: " 
-						<< eachcol_runranges[j].first << ", Upper Limit: " << eachcol_runranges[j].second << endl;
+					// cout << "Col: " << i << ", Restriction: " << col_restrictions[i][j] << ", Lower Limit: " 
+					// 	<< eachcol_runranges[j].first << ", Upper Limit: " << eachcol_runranges[j].second << endl;
 				}
 				// refine run ranges for the entire column
 				col_black_runs[i] = eachcol_runranges;
@@ -950,7 +950,7 @@ public:
 							if (cells[i*n_cols+start] == 0) {
 								// length of this black run
 								//uint16_t length_of_j = row_restrictions[i][j];
-								for (uint16_t m = start+1; m < row_restrictions[i][j]; m++) {
+								for (uint16_t m = start+1; m <= start + row_restrictions[i][j] - 1; m++) {
 									// COLOUR THE CELLS
 									if (cells[i*n_cols+m] == -1) {
 										cells[i*n_cols+m] = 0;
@@ -1003,12 +1003,14 @@ public:
 							// CASE 3
 							uint16_t iter = start;
 							vector<range> temp;
-							while (iter <= end) {
+							uint16_t curr_row = i;
+							while (iter <= end && curr_row == i) {
 								if (cells[i*n_cols+iter] == 0) {
 									// start of a black segment
 									uint16_t start_seg = iter;
-									while (iter <= end && cells[i*n_cols+iter] == 0) {
+									while (iter <= end && cells[i*n_cols+iter] == 0 && curr_row == i) {
 										iter++;
+										curr_row = (i*n_cols+iter)/n_cols;
 									}
 									uint16_t end_seg = iter - 1;
 									// if (iter > end) {
@@ -1024,8 +1026,10 @@ public:
 								}
 								else {
 									iter++;
+									curr_row = (i*n_cols+iter)/n_cols;
 								}
 							}
+							//cout << "got here" << endl;
 							if (temp.size() >= 2) {
 								//uint16_t length_of_j = row_restrictions[i][j];
 								uint16_t start_0 = temp[0].first;
@@ -1052,13 +1056,17 @@ public:
 							if (cells[i*n_cols+end] == 0) {
 								// length of this black run
 								//uint16_t length_of_j = row_restrictions[i][j];
-								for (uint16_t m=end-1; m >= end-row_restrictions[i][j] + 1; m--) {
+								
+								//cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " Got here" << endl;
+
+								for (int16_t m=end-1; m >= end-row_restrictions[i][j] + 1; m--) {
 									// COLOUR THE CELLS
 									if (cells[i*n_cols+m] == -1) {
 										cells[i*n_cols+m] = 0;
 										solved_indicator++;
 									}
 								}
+								//cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " Got here" << endl;
 								// refine the run range of this black run
 								// js = je - LBj + 1
 								start = end - row_restrictions[i][j] + 1;
@@ -1087,6 +1095,7 @@ public:
 									eachrow_runranges[j+1].first = end + 2;
 								}
 							}
+							// cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " Got here" << endl;
 							// CASE 2
 							for (uint16_t n=end; n > start; n--) {
 								// if an empty cell appears before a black or unknown cell 
@@ -1096,15 +1105,18 @@ public:
 									break;
 								}
 							}
+							// cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " Got here" << endl;
 							// CASE 3
 							uint16_t iter = start;
 							vector<range> temp;
-							while (iter <= end) {
+							uint16_t curr_row = i;
+							while (iter <= end && curr_row == i) {
 								if (cells[i*n_cols+iter] == 0) {
 									// start of a black segment
 									uint16_t start_seg = iter;
-									while (iter <= end && cells[i*n_cols+iter] == 0) {
+									while (iter <= end && cells[i*n_cols+iter] == 0 && curr_row == i) {
 										iter++;
+										curr_row = (i*n_cols+iter)/n_cols;
 									}
 									uint16_t end_seg = iter - 1;
 
@@ -1114,9 +1126,11 @@ public:
 								}
 								else {
 									iter++;
+									curr_row = (i*n_cols+iter)/n_cols;
 								}
 							}
-							if (temp.size() > 2) {
+							//cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " Got here" << endl;
+							if (temp.size() >= 2) {
 								uint16_t b = temp.size();
 								uint16_t end_2 = temp[b-1].second;
 								uint16_t iter_2 = b - 2;
@@ -1134,6 +1148,7 @@ public:
 						}
 					}
 					eachrow_runranges[j] = range(start, end);
+					//cout << "Row " << i << ", Black run " << row_restrictions[i][j] << " evaluated." << endl;
 				}
 				row_black_runs[i] = eachrow_runranges;
 			}
@@ -1157,7 +1172,7 @@ public:
 							if (cells[start*n_cols+i] == 0) {
 								// length of the black run
 								//uint16_t length_of_j = col_restrictions[i][j];
-								for (uint16_t m=start+1; m < col_restrictions[i][j]; m++) {
+								for (uint16_t m=start+1; m <= col_restrictions[i][j] + start - 1; m++) {
 									// COLOUR THE CELLS!
 									if (cells[m*n_cols+i] == -1) {
 										cells[m*n_cols+i] = 0;
@@ -1199,19 +1214,24 @@ public:
 							// CASE 3
 							uint16_t iter = start; 
 							vector<range> temp;
-							while (iter <= end) {
+							uint16_t curr_col = i;
+							while (iter <= end && curr_col == i) {
 								if (cells[iter*n_cols+i] == 0) {
 									// start of a black segment
 									uint16_t start_seg = iter;
-									while (iter <= end && cells[iter*n_cols+i] == 0) {
+									while (iter <= end && cells[iter*n_cols+i] == 0 && curr_col == i) {
 										iter++;
+										curr_col = (iter*n_cols+i) % n_cols;
 									}
 									uint16_t end_seg = iter - 1;
 									temp.push_back(range(start_seg, end_seg));
 								}
-								else { iter++; }
+								else { 
+									iter++; 
+									curr_col = (iter*n_cols+i) % n_cols;
+								}
 							}
-							if (temp.size() > 2) {
+							if (temp.size() >= 2) {
 								uint16_t start_0 = temp[0].first;
 								uint16_t iter_2 = 1;
 								while (iter_2 < temp.size()) {
@@ -1231,7 +1251,7 @@ public:
 
 							// CASE 1: Crje is coloured
 							if (cells[end*n_cols+i] == 0) {
-								for (uint16_t m=end-1; m >= end - col_restrictions[i][j] + 1; m--) {
+								for (int16_t m=end-1; m >= end - col_restrictions[i][j] + 1; m--) {
 									// COLOUR THE CELLS
 									if (cells[m*n_cols+i] == -1) {
 										cells[m*n_cols+i] = 0;
@@ -1276,19 +1296,24 @@ public:
 							// CASE 3
 							uint16_t iter = start; 
 							vector<range> temp;
-							while (iter <= end) {
+							uint16_t curr_col = i;
+							while (iter <= end && curr_col == i) {
 								if (cells[iter*n_cols+i] == 0) {
 									// start of a black segment
 									uint16_t start_seg = iter;
-									while (iter <= end && cells[iter*n_cols+i] == 0) {
+									while (iter <= end && cells[iter*n_cols+i] == 0 && curr_col == i) {
 										iter++;
+										curr_col = (iter*n_cols+i) % n_cols;
 									}
 									uint16_t end_seg = iter - 1;
 									temp.push_back(range(start_seg, end_seg));
 								}
-								else { iter++; }
+								else { 
+									iter++; 
+									curr_col = (iter*n_cols+i) % n_cols;
+								}
 							}
-							if (temp.size() > 2) {
+							if (temp.size() >= 2) {
 								uint16_t b = temp.size();
 								uint16_t end_2 = temp[b-1].second;
 								uint16_t iter_2 = b - 2;
