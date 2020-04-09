@@ -167,21 +167,29 @@ public:
 					
 					if (k == 0) {
 						// if an entire row has no black runs, every cell in that row should be empty
-						cells[i] = 1;
-						solved_indicator++;
+						if (cells[i] == -1) {
+							cells[i] = 1;
+							solved_indicator++;
+						}
 					}
 					else if (curr_col >= 0 && curr_col<each_row_black_runs[0].first) {
-						cells[i] = 1;
-						solved_indicator++;
+						if (cells[i] == -1) {
+							cells[i] = 1;
+							solved_indicator++;
+						}
 					}
 					else if (each_row_black_runs[k-1].second < curr_col && curr_col < n_cols) {
-						cells[i] = 1;
-						solved_indicator++;
+						if (cells[i] == -1) {
+							cells[i] = 1;
+							solved_indicator++;
+						}
 					}
 					for (uint16_t j=0; j<k-1; j++) {
 						if (each_row_black_runs[j].second < curr_col && curr_col < each_row_black_runs[j+1].first) {
-							cells[i] = 1;
-							solved_indicator++;
+							if (cells[i] == -1) {
+								cells[i] = 1;
+								solved_indicator++;
+							}
 						}
 					}
 				}
@@ -207,21 +215,29 @@ public:
 
 						if (k == 0) {
 							// if an entire col has no black runs, every cell in that col should be empty
-							cells[i] = 1;
-							solved_indicator++;
+							if (cells[i] == -1) {
+								cells[i] = 1;
+								solved_indicator++;
+							}
 						}
 						else if (counter >= 0 && counter < each_col_black_runs[0].first) {
-							cells[i] = 1;
-							solved_indicator++;
+							if (cells[i] == -1) {
+								cells[i] = 1;
+								solved_indicator++;
+							}
 						}
 						else if (each_col_black_runs[k-1].second < counter && counter < n_rows) {
-							cells[i] = 1;
-							solved_indicator++;
+							if (cells[i] == -1) {
+								cells[i] = 1;
+								solved_indicator++;
+							}
 						}
 						for (uint16_t m=0; m<k-1; m++) {
 							if (each_col_black_runs[m].second < counter && counter < each_col_black_runs[m+1].first) {
-								cells[i] = 1;
-								solved_indicator++;
+								if (cells[i] == -1) {
+									cells[i] = 1;
+									solved_indicator++;
+								}
 							}
 						}
 					}
@@ -436,8 +452,10 @@ public:
 							}
 							if (counter_left + counter_right + 1 > max_length) {
 								// MAKE THE CURRENT CELL EMPTY!
-								cells[i] = 1;
-								solved_indicator++;
+								if (cells[i] == -1) {
+									cells[i] = 1;
+									solved_indicator++;
+								}
 							}
 						}
 					}
@@ -494,8 +512,10 @@ public:
 
 								if (counter_up + counter_down + 1 > max_length) {
 									// MAKE THE CURRENT CELL EMPTY!
-									cells[i] = 1;
-									solved_indicator++;
+									if (cells[i] == -1) {
+										cells[i] = 1;
+										solved_indicator++;
+									}
 								}
 							}
 						}
@@ -1188,7 +1208,7 @@ public:
 									solved_indicator++;
 								}
 								if (end + 1 < n_rows) {
-									if (cells[(end+1)*n_cols+i]) {
+									if (cells[(end+1)*n_cols+i] == -1) {
 										cells[(end+1)*n_cols+i] = 1;
 										solved_indicator++;
 									}
