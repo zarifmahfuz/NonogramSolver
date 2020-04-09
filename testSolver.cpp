@@ -198,54 +198,78 @@ int main(int argc, char *argv[]){
 
 		// just rows
 		nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+		cout << "rule 1.1 success" <<endl;
 
 		nonogram.rule_2(1);
+		cout << "rule 1.2 success" <<endl;
 
 		nonogram.rule_3(1);
+		cout << "rule 1.3 success" <<endl;
 
 		nonogram.rule_4(1);
+		cout << "rule 1.4 success" <<endl;
 
 		nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+		cout << "rule 1.5 success" <<endl;
 
 		nonogram.rule_6(1);
+		cout << "rule 2.1 success" <<endl;
 
 		nonogram.rule_7(1);
+		cout << "rule 2.2 success" <<endl;
 
 		nonogram.rule_8(1);
+		cout << "rule 2.3 success" <<endl;
 
 		nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+		cout << "rule 3.1 success" <<endl;
 
 		nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+		cout << "rule 3.2 success" <<endl;
 
 		nonogram.rule_11(1);
+		cout << "rule 3.3 success" <<endl;
 
 		cout << "----------------------------------------" << endl;
 		cout << "COLS" << endl;
 
 		// just columns
 		nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+		cout << "rule 1.1 success" <<endl;
 
 		nonogram.rule_2(2);
+		cout << "rule 1.2 success" <<endl;
 
 		nonogram.rule_3(2);
-		
+		cout << "rule 1.3 success" <<endl;
+
 		nonogram.rule_4(2);
+		cout << "rule 1.4 success" <<endl;
+
+		print_stuff(&nonogram, false, true);
+		cout << endl;
 
 		nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+		cout << "rule 1.5 success" <<endl;
 
 		nonogram.rule_6(2);
+		cout << "rule 2.1 success" <<endl;
 
 		nonogram.rule_7(2);
+		cout << "rule 2.2 success" <<endl;
 
 		nonogram.rule_8(2);
+		cout << "rule 2.3 success" <<endl;
 
 		nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+		cout << "rule 3.1 success" <<endl;
 
 		nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+		cout << "rule 3.2 success" <<endl;
 
 		nonogram.rule_11(2);
+		cout << "rule 3.3 success" <<endl;
 
-		cout << "bad boi" << endl;
 		print_stuff(&nonogram, false, true);
 		cout << endl;
 	}
