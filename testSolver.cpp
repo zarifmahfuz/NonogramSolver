@@ -36,7 +36,12 @@ void print_stuff(Puzzle *puzzle, bool print_ranges, bool print_puzzle) {
 	if (print_puzzle) {
 		for (uint16_t i=0; i<rows; i++) {
 			for (uint16_t j=0; j<cols; j++) {
-				cout << (*puzzle).cells[i*cols+j] << " ";
+				if ((*puzzle).cells[i*cols+j] == -1 ){
+					cout << "-" << " ";
+				}
+				else {
+					cout << (*puzzle).cells[i*cols+j] << " ";
+				}
 			}
 			cout << endl;
 		}
@@ -160,10 +165,7 @@ int main(int argc, char *argv[]){
 
 	// applying rule 1.5 on rows and columns,respectively 
 	nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-
-	// cout << " CHECK COLS:" << endl;
 	nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-	// cout << " DONE " << endl;
 
 	// applying rule 2.1 
 	nonogram.rule_6(1);
@@ -177,20 +179,73 @@ int main(int argc, char *argv[]){
 	nonogram.rule_8(1);
 	nonogram.rule_8(2);
 
-	print_stuff(&nonogram, false, true);
-
 	// applying rule 3.1
 	// on rows
-	// nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+	nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 	// on cols
-	// nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
+	nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
 
 	// appplying 3.2
-	// nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+	// on rows
+	nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 	// on cols
-	// cout << " CHECK COLS:" << endl;
-	// nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-	
+	nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+	print_stuff(&nonogram, false, true);
+	cout << endl;
+
+	while (nonogram.solved_indicator != row_dim*col_dim) {
+
+		// just rows
+		nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+		nonogram.rule_2(1);
+
+		nonogram.rule_3(1);
+
+		nonogram.rule_4(1);
+
+		nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+		nonogram.rule_6(1);
+
+		nonogram.rule_7(1);
+
+		nonogram.rule_8(1);
+
+		nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+		nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+
+		cout << "----------------------------------------" << endl;
+		cout << "COLS" << endl;
+
+		// just columns
+		nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+		nonogram.rule_2(2);
+
+		nonogram.rule_3(2);
+		
+		nonogram.rule_4(2);
+
+		nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+		nonogram.rule_6(2);
+
+		nonogram.rule_7(2);
+
+		nonogram.rule_8(2);
+
+		nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+		nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+		cout << "bad boi" << endl;
+		print_stuff(&nonogram, false, true);
+		cout << endl;
+	}
+
+	print_stuff(&nonogram, false, true);
+
 	return 0;
 }
