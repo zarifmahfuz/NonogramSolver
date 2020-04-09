@@ -1013,7 +1013,7 @@ public:
 
 							// CASE 2
 							for (uint16_t n=start; n < end-1; n++) {
-								if (cells[i*n_cols+n]!=1 && cells[i*n_cols+n+1]==1) {
+								if (cells[i*n_cols+n]==0 && cells[i*n_cols+n+1]==1) {
 									// if an empty cell appears after a black cell in the run range of j
 									// je = n+1 - 1
 									end = n;
@@ -1120,7 +1120,7 @@ public:
 							// CASE 2
 							for (uint16_t n=end; n > start; n--) {
 								// if an empty cell appears before a black or unknown cell 
-								if (cells[i*n_cols+n] != 1 && cells[i*n_cols+n-1] == 1) {
+								if (cells[i*n_cols+n] == 0 && cells[i*n_cols+n-1] == 1) {
 									// js = n-1+1
 									start = n;
 									break;
@@ -1227,7 +1227,7 @@ public:
 							}
 							// CASE 2
 							for (uint16_t n=start; n<end-1; n++) {
-								if (cells[n*n_cols+i] != 1 && cells[(n+1)*n_cols+i] == 1) {
+								if (cells[n*n_cols+i] == 0 && cells[(n+1)*n_cols+i] == 1) {
 									end = n;
 									break;
 								}
@@ -1309,7 +1309,7 @@ public:
 							// CASE 2
 							for (uint16_t n=end; n > start; n--) {
 								// if an empty cell appears before a black or unknown cell
-								if  (cells[n*n_cols+i] != 1 && cells[(n-1)*n_cols+i] == 1) {
+								if  (cells[n*n_cols+i] == 0 && cells[(n-1)*n_cols+i] == 1) {
 									start = n;
 									break;
 								}
