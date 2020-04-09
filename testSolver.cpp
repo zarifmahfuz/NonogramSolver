@@ -9,6 +9,41 @@
 
 using namespace std;
 
+void print_stuff(Puzzle *puzzle, bool print_ranges, bool print_puzzle) {
+	uint16_t rows = (*puzzle).n_rows;
+	uint16_t cols = (*puzzle).n_cols;
+	//cout << "Rows: " << rows << ", Cols: " << cols << endl;
+
+	if (print_ranges) {
+		for (uint16_t i=0; i<rows; i++) {
+			vector<range> eachrow_runranges = (*puzzle).row_black_runs[i];
+			for (uint16_t j=0; j<eachrow_runranges.size(); j++) {
+				cout << "Row: " << i << ", Restriction: " << (*puzzle).row_restrictions[i][j] 
+				<< ", Lower limit: " << eachrow_runranges[j].first << ", Upper limit: " 
+				<< eachrow_runranges[j].second << endl;
+			}
+		}
+		cout << endl;
+		for (uint16_t i=0; i<cols; i++) {
+			vector<range> eachcol_runranges = (*puzzle).col_black_runs[i];
+			for (uint16_t j=0; j<eachcol_runranges.size(); j++) {
+				cout << "Col: " << i << ", Restriction: " << (*puzzle).col_restrictions[i][j] 
+				<< ", Lower limit: " << eachcol_runranges[j].first << ", Upper limit: " 
+				<< eachcol_runranges[j].second << endl;
+			}
+		}
+	}
+	if (print_puzzle) {
+		for (uint16_t i=0; i<rows; i++) {
+			for (uint16_t j=0; j<cols; j++) {
+				cout << (*puzzle).cells[i*cols+j] << " ";
+			}
+			cout << endl;
+		}
+	}
+}
+
+
 void read_input_file(char filename[], uint16_t &total_rows, uint16_t &total_cols,
 	vector <vector<uint16_t>> &rows, vector <vector<uint16_t>> &columns){
 
@@ -142,7 +177,7 @@ int main(int argc, char *argv[]){
 	nonogram.rule_8(1);
 	nonogram.rule_8(2);
 
-
+	print_stuff(&nonogram, false, true);
 
 	// applying rule 3.1
 	// on rows
