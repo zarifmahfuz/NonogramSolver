@@ -607,8 +607,17 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
 			}
 
+			
+			//(*black_runs)[line][runs].first = white_segs[seg_num].first;
+
 			// change the range of this run accordingly
-			(*black_runs)[line][runs].first = white_segs[seg_num].first;
+			if (isCol) {
+				(*black_runs)[line][runs].first= floor ((white_segs[seg_num].first- line)/n_cols); 
+			}
+			else {
+				// get column ind
+				(*black_runs)[line][runs].first=  (white_segs[seg_num].first- line*n_cols); 
+			}
 
 			// cout << "rjs: " << (*black_runs)[line][runs].first << endl;
 			// save it for later
@@ -626,7 +635,6 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 			}
 			else {
 				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
-
 			}
 
 			
@@ -639,7 +647,16 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				
 			}
 
-			(*black_runs)[line][runs].second = white_segs[seg_num].second;
+			//(*black_runs)[line][runs].second = white_segs[seg_num].second;
+
+			// change the range of this run accordingly
+			if (isCol) {
+				(*black_runs)[line][runs].second= floor ((white_segs[seg_num].second- line)/n_cols); 
+			}
+			else {
+				// get column ind
+				(*black_runs)[line][runs].second=  (white_segs[seg_num].second- line*n_cols); 
+			}
 
 			// cout << "rje: " << (*black_runs)[line][runs].second <<endl << endl;
 
