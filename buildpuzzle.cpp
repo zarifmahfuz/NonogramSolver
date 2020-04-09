@@ -157,34 +157,41 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 			// alter index accordingly depending if you're iterating thru columns or rows
 			if (isCol) {
 				cellInd = n_cols*celli +line;
+				cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
 			}
 			else {
 				cellInd = n_cols*line+celli;
+				cout << "row: " << line << "| col: " << celli<< "| cell:" << cellInd  << endl;
 			}
 
 			
 			if (cells[cellInd] == 0) {
-
-				
 				// find the smallest run that could be in celli
 				uint16_t runs_per_line = (*black_runs)[line].size();
 				vector <uint16_t> runs_in_range;
 
+				cout << "is black" << endl;
 				for (uint16_t run = 0; run <runs_per_line; run++){
 
 					range my_range = (*black_runs)[line][run];
+					cout << "runnum: " << run << endl;
+
+					cout << "top limit: " << my_range.first << "bottom limit: " << my_range.second << endl;
 					// if the run's range includes the cell
 					if (celli >= my_range.first && celli <= my_range.second) {
+						cout << "included" <<endl;
 						// push the length of the run
 						runs_in_range.push_back((*restrictions)[line][run]);
 					}
 				}
 				// find minimum length 
 				uint16_t minlen = *min_element(runs_in_range.begin(), runs_in_range.end());
+				//cout << "checkpoint1 ," << endl;
 
 				if (adjacent_find(runs_in_range.begin(), runs_in_range.end(), not_equal_to<>() ) == runs_in_range.end()) {
 				    // elements in vec are all the same
 				    // cout << "are same" << line << endl;
+
 
 				    // -1 because it is counted twice
 				    int16_t tally = -1;
@@ -194,10 +201,10 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				    bool atRightEnd = false;
 				    bool atLeftEnd = false;
 				    // go before until you reach an unknown or a white
-				    while (cells[cellInd] == 0 && start > -1) {
+				    while (start > -1 && cells[cellInd] == 0) {
 				    	tally++;
-				    	//cout << "ran" << " ";
 				    	// move on
+				    	//cout << start <<endl;
 				    	start--;
 				    	if (isCol) {
 							cellInd = n_cols*start +line;
@@ -205,7 +212,10 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 						else {
 							cellInd = n_cols*line+start;
 						}
+						//cout << "new cellind: " << cellInd <<endl;
 				    }
+
+				    //cout << "checkpoint2 ,";
 
 				    if (isCol) {
 						cellInd = n_cols*celli +line;
@@ -215,7 +225,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 					}
 
 				    // go after until you reach an unknown or a white
-				    while (cells[cellInd] == 0 && end < perpTotal) {
+				    while (end < perpTotal && cells[cellInd] == 0) {
 				    	tally++;
 				    	//cout << "run" << " ";
 				    	// move on
@@ -228,14 +238,16 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 						}
 				    }
 
+				   	// cout << "checkpoint3 ," << endl;
+
 				    // cout << "end: " << end << endl;
 				    // check if you touched the wall
 				    if(end == perpTotal){
-				    	// cout << "touched Rwall" << endl;
+				    	//cout << "touched Bwall" << endl;
 				    	atRightEnd = true;
 				    }
 				    if (start == -1) {
-				    	// cout << "touched Lwall" << endl;
+				    	//cout << "touched Twall" << endl;
 				    	atLeftEnd = true;
 				    }
 
@@ -248,28 +260,30 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				    	if (isCol) {
 				    		// cellInd currently contains the end cell
 				    		
-				    		if (cells[cellInd]== -1 && !atRightEnd) {
+				    		if (!atRightEnd && cells[cellInd]== -1) {
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
 								//cout << cellInd <<endl;
+								//cout << "coloured the bottom" << endl;
 							}
-						
+
 
 							// possibly whiten the start
 							cellInd = n_cols*start +line;
 						
-							if (cells[cellInd]== -1 && !atLeftEnd) {
+							if (!atLeftEnd && cells[cellInd]== -1) {
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
+								//cout << "coloured the top" << endl;
 								//cout << cellInd <<endl;
 							}
 							
 						}
 						else {
 							// cellInd currently contains the end cell
-							if (cells[cellInd]== -1 && !atRightEnd) {
+							if (!atRightEnd && cells[cellInd]== -1) {
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
@@ -278,14 +292,15 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 
 							// possibly whiten the start 
 							cellInd = n_cols*line+start;
-							if (cells[cellInd]== -1 && !atLeftEnd) {
+							if (!atLeftEnd && cells[cellInd]== -1) {
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
 								//cout << cellInd <<endl;
 							}
-							
 						}
+
+						//cout << "checkpoint4 ," << endl;
 				    }
 				}
 
@@ -315,6 +330,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 				//try to find another black cell
 			}
+			cout << "made it" <<endl;
 
 			// if there are no black cells, rule does not apply
 		}
