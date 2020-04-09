@@ -110,7 +110,7 @@ public:
 
 				if (j==0) {
 					lower_lim = 0;
-					uint16_t cumsum = 0;
+					int16_t cumsum = 0;
 
 					for (int j_2 = j+1; j_2<k; j_2++) {
 						cumsum = cumsum + each_col_restrictions[j_2] + 1;
@@ -302,6 +302,7 @@ public:
 							
 						}
 						else {
+							// assuming puzzle size will be atleast 2x2 
 							// checking for black run of length 1
 							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
 								// make the next cell empty
@@ -329,8 +330,8 @@ public:
 					if (start != 0) {
 						// looks at j'th column and start'th row
 						uint16_t look_at_cell = start*n_cols + i;
-						uint16_t prev_row_same_col = (start-1)*n_cols + i;
-						uint16_t next_row_same_col = (start+1)*n_cols + i;
+						int16_t prev_row_same_col = (start-1)*n_cols + i;
+						int16_t next_row_same_col = (start+1)*n_cols + i;
 
 						if (start == n_rows-1) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
@@ -355,11 +356,11 @@ public:
 							}
 						}
 					}
-					if (end != n_rows-1) {
+					if (end < n_rows - 1) {
 						// looks at j'th column and end'th row
 						uint16_t look_at_cell = end*n_cols + i;
-						uint16_t prev_row_same_col = (end-1)*n_cols + i;
-						uint16_t next_row_same_col = (end+1)*n_cols + i;
+						int16_t prev_row_same_col = (end-1)*n_cols + i;
+						int16_t next_row_same_col = (end+1)*n_cols + i;
 
 						if (end != 0) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
