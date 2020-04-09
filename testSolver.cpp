@@ -217,6 +217,8 @@ int main(int argc, char *argv[]){
 
 		nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 
+		nonogram.rule_11(1);
+
 		cout << "----------------------------------------" << endl;
 		cout << "COLS" << endl;
 
@@ -240,6 +242,9 @@ int main(int argc, char *argv[]){
 		nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
 
 		nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
+
+		nonogram.rule_11(2);
+
 		cout << "bad boi" << endl;
 		print_stuff(&nonogram, false, true);
 		cout << endl;
