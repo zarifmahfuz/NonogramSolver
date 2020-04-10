@@ -990,7 +990,7 @@ public:
 
 								// if the (end+1)'th cell is in the same row
 								if ((i*n_cols + end + 1)/n_cols == i) {
-									if (cells[i*n_cols+end+1] = -1) {
+									if (cells[i*n_cols+end+1] == -1) {
 										cells[i*n_cols+end+1] = 1;
 										solved_indicator += 1;
 									}
