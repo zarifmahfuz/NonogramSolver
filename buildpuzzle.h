@@ -871,12 +871,26 @@ public:
 											eachrow_runranges[left].first <= temp[m].first
 											&& eachrow_runranges[left].second >= temp[m].second) {
 											
+											if (right <= k && length <= row_restrictions[i][right] && 
+											eachrow_runranges[right].first <= temp[m].first
+											&& eachrow_runranges[right].second >= temp[m].second) {
+
+												is_right = true;
+												
+											}
 											is_left = true;
 											break;
 										}
 										if (right <= k && length <= row_restrictions[i][right] && 
 											eachrow_runranges[right].first <= temp[m].first
 											&& eachrow_runranges[right].second >= temp[m].second) {
+
+											if (left >= 0 && length <= row_restrictions[i][left] && 
+											eachrow_runranges[left].first <= temp[m].first
+											&& eachrow_runranges[left].second >= temp[m].second) {
+
+												is_left = true;
+											}
 
 											is_right = true;
 											break;
@@ -990,12 +1004,27 @@ public:
 											eachcol_runranges[left].first <= temp[m].first
 											&& eachcol_runranges[left].second >= temp[m].second) {
 											
+											if (right <= k && length <= col_restrictions[i][right] && 
+											eachcol_runranges[right].first <= temp[m].first
+											&& eachcol_runranges[right].second >= temp[m].second) {
+
+												is_right = true;
+											}
+
 											is_left = true;
 											break;
 										}
 										if (right <= k && length <= col_restrictions[i][right] && 
 											eachcol_runranges[right].first <= temp[m].first
 											&& eachcol_runranges[right].second >= temp[m].second) {
+
+											if (left >= 0 && length <= col_restrictions[i][left] && 
+											eachcol_runranges[left].first <= temp[m].first
+											&& eachcol_runranges[left].second >= temp[m].second) {
+
+												is_left = true;
+											}
+
 
 											is_right = true;
 											break;
