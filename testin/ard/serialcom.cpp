@@ -1,22 +1,5 @@
 #include "serialcom.h"
 
-// max size of buffer, including null terminator
-const uint16_t buf_size = 256;
-// current number of chars in buffer, not counting null terminator
-uint16_t buf_len = 0;
-
-// input buffer
-char* buffer = (char *) malloc(buf_size);
-void process_line() {
-  // print what's in the buffer back to server
-  Serial.print("Got: ");
-  Serial.println(buffer);
-
-  // clear the buffer
-  buf_len = 0;
-  buffer[buf_len] = 0;
-}
-
 /* 
     Description: Waits for a certain number of bytes on Serial3 or timeout
     Arguments:
@@ -38,68 +21,67 @@ bool wait_on_serial(uint8_t nbytes, long timeout) {
   return Serial.available() >= nbytes;
 }
 
-int32_t str_to_int32(char delimiter) {
-  bool done = false;
-  int32_t result;
+int** solvedNono(int *dimensions) {
+    /* Communicates with desktop C++ to read in information about the nonogram
+    and returns a nonogram of 1s and 0s to be displayed on the tft display.
+    Recieved help with returning a matrix from https://stackoverflow.com/quest
+    ions/8617683/return-a-2d-array-from-a-function
 
-  String inString = "";
+    Arguments: *dimensions: array to store row and column sizes, runtime, and
+                    an end of loop marker.
+    
+    Returns: nonogram: A pointer to a matrix of size row*col that contains 1s
+                and 0s pertaining to how the nonogram will be displayed on the
+                tft screen.
+    */
+    int** nonogram = 0;  // Initialize pointer, we will build this later on
 
-  while (!done) {
-    int inChar = Serial.read();
-    if (isDigit(inChar) || inChar == 45) {
-      // convert the incoming byte to a char and add it to the string:
-      inString += (char)inChar;
-    }
-    // if you get a newline save the string's value:
-    if (inChar == delimiter) {
-      done = true;
-      result = inString.toInt();
-      // clear the string for new input:
-      inString = "";
-    }
-  }
+    // Send acknowledgment to begin communication
+    Serial.println("A");
 
-  return result;
-}
-
-int rowSize() {
-    int row;
-    if (wait_on_serial(1, 1000)) {
-        //String row_size = Serial.read();
-        //return row_size.toInt();
-        //char in_char = Serial.read();
-
-         row = str_to_int32('\n');
-
-    }
-        return row;
-}
-
-int colSize() {
-    int col;
-    if (wait_on_serial(1, 1000)) {
-        col = str_to_int32('\n');
-
-    }
-        return col;
-}
-
-int** solvedNono(int row_size, int col_size) {
+    // Keep it running and monitor timeout
     if (wait_on_serial(1, 10000)) {
+        String read = Serial.readString();  // Read input string for row size
+        int row = read.toInt();  // Convert it to integer
+        Serial.println("R");  // Print received signal
 
-        int** nonogram = 0;
+        // Repeat the same steps to get the column size and runtime
+        read = Serial.readString();
+        int col = read.toInt();
+        Serial.println("R");
 
-        nonogram = new int*[row_size];
+        // Runtime
+        read = Serial.readString();
+        int runtime = read.toInt();
+        Serial.println("R");
 
-        for (int i = 0; i < row_size; i++) {
-        	if (wait_on_serial(1, 5000)) {
-        	    nonogram[i] = new int[col_size];
-        	    for (int j = 0; j < col_size; j++) {
-        	        int val = str_to_int32('\n');
-        	        nonogram[i][j] = val;
-        	    }
+        // Store the received input in dimensions so it can be analyzed wherever
+        // it is called
+        dimensions[0] = row;
+        dimensions[1] = col;
+        dimensions[2] = runtime;
+
+        // Make an array of nonogram
+        nonogram = new int*[row];
+        for (int i=0; i < row; i++) {
+            // Now make it a proper matrix
+            nonogram[i] = new int[col];
+            for (int j=0; j < col; j++) {
+                // Send Acknowledgment to send a matrix input
+                Serial.println("S");
+
+                // Read value, convert to int and store in correct position
+                read = Serial.readString();
+                int val = read.toInt();
+                nonogram[i][j] = val;
             }
         }
-        return nonogram;
+        Serial.println("M");  // Send signal for received matrix
+        read = Serial.readString();  // Read signal for end of communication
+        if (read == "E\n") {
+            Serial.println("E");  // Send confirmation
+            dimensions[3] = 0;  // Change loop marker
+        }
     }
+    return nonogram;  // Return matrix
 }

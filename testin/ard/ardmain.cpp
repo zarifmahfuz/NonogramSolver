@@ -1,5 +1,3 @@
-//#include <string>
-//#include <sstream>
 #include <Arduino.h>
 #include "serialcom.h"
 #include <MCUFRIEND_kbv.h>
@@ -39,40 +37,71 @@ Sd2Card card;
 MCUFRIEND_kbv tft;
 
 void setup() {
-  init();
-  Serial.begin(9600);
+    init();
+    Serial.begin(9600);
+    Serial.flush();
 
-  // tft display initialization
-  uint16_t ID = tft.readID();
-  tft.begin(ID);
 
-  tft.fillScreen(TFT_BLACK);
-  tft.setRotation(1);
+    // tft display initialization
+    uint16_t ID = tft.readID();
+    tft.begin(ID);
 
-  // SD card initialization for raw reads
-  Serial.print("Initializing SPI communication for raw reads...");
-  if (!card.init(SPI_HALF_SPEED, SD_CS)) {
-    Serial.println("failed! Is the card inserted properly?");
-    while (true) {}
-  } else {
-    Serial.println("OK!");
-  }
+    tft.fillScreen(TFT_BLACK);
+    tft.setRotation(1);
+
+    // SD card initialization for raw reads
+    Serial.print("Initializing SPI communication for raw reads...");
+    if (!card.init(SPI_HALF_SPEED, SD_CS)) {
+        Serial.println("failed! Is the card inserted properly?");
+        while (true) {}
+    } else {
+        Serial.println("OK!");
+    }
 }
 
 int main(){
     setup();
 
-    int row = rowSize();
-    int col = colSize();
+    // Initialize dimensions array as -1 to hold information from communication
+    // dimensions[0] is row size
+    // dimensions[1] is column size
+    // dimensions[2] is runtime
+    // dimensions[3] is marker for the while loop
+    int dimensions[4];
+    dimensions[1] = -1;
+    dimensions[0] = -1;
+    dimensions[2] = -1;
+    dimensions[3] = -1;
 
-    int** nonogram = solvedNono(row, col);
+    // Initialize nonogram matrix
+    int** nonogram;
 
+    // Communication until it is successful (when dimensions[3] is no longer -1)
+    while (dimensions[3] == -1){
+    nonogram = solvedNono(dimensions);
+    }
+
+    // Bunch of debug statements to see what was going on. We can remove this
     tft.setCursor(0,0);
     tft.setTextSize(2);
 
-    tft.print(row);
+    tft.print(dimensions[0]);
+    tft.setCursor(0,20);
+    tft.print(dimensions[1]);
 
-    Serial.flush();
+    tft.setCursor(0, 50);
 
+    for (int i = 0; i < dimensions[0]; i++) {
+        tft.print(nonogram[i][0]);
+        tft.print("  ");
+        tft.print(nonogram[i][1]);
+        tft.print(nonogram[i][2]);
+        tft.setCursor(0, 70+i*20);
+    }
+
+    tft.setCursor(100, 0);
+    tft.print(dimensions[2]);
+
+    Serial.flush();  // Don't forget to flush at the end
     return 0;
 }
