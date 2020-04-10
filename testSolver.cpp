@@ -39,8 +39,11 @@ void print_stuff(Puzzle *puzzle, bool print_ranges, bool print_puzzle) {
 				if ((*puzzle).cells[i*cols+j] == -1 ){
 					cout << "-" << " ";
 				}
-				else {
-					cout << (*puzzle).cells[i*cols+j] << " ";
+				else if ((*puzzle).cells[i*cols+j] == 0){
+					cout << "■" << " ";
+				}
+				else{
+					cout << "□" << " ";
 				}
 			}
 			cout << endl;
@@ -183,6 +186,7 @@ int main(int argc, char *argv[]){
 	// on rows
 	nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
 	// on cols
+	cout << "cols" << endl;
 	nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
 
 	// appplying 3.2
