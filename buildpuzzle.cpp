@@ -49,6 +49,7 @@ void Puzzle::check_overlap(uint16_t total, uint16_t perpTotal, vector<vector<uin
 				// colour it
 				cells[converted_ind] = 0;
 				solved_indicator++;
+				//cout << "indicator: " << solved_indicator << "| made " << converted_ind << " black in rule 1.1" << endl;
 			}
 		}
 	}
@@ -134,6 +135,7 @@ void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol
 			cells[colind] = 0;
 			// cout << colind << endl;
 			solved_indicator++;
+			//cout << "indicator: " << solved_indicator << "| made " << colind << " black in push_to_colour" << endl;
 		}
 	}
 }
@@ -157,11 +159,11 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 			// alter index accordingly depending if you're iterating thru columns or rows
 			if (isCol) {
 				cellInd = n_cols*celli +line;
-				cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
+				//cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
 			}
 			else {
 				cellInd = n_cols*line+celli;
-				cout << "row: " << line << "| col: " << celli<< "| cell:" << cellInd  << endl;
+				//cout << "row: " << line << "| col: " << celli<< "| cell:" << cellInd  << endl;
 			}
 
 			
@@ -170,16 +172,16 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				uint16_t runs_per_line = (*black_runs)[line].size();
 				vector <uint16_t> runs_in_range;
 
-				cout << "is black" << endl;
+				//cout << "is black" << endl;
 				for (uint16_t run = 0; run <runs_per_line; run++){
 
 					range my_range = (*black_runs)[line][run];
-					cout << "runnum: " << run << endl;
+					//cout << "runnum: " << run << endl;
 
-					cout << "top limit: " << my_range.first << "bottom limit: " << my_range.second << endl;
+					//cout << "top limit: " << my_range.first << "bottom limit: " << my_range.second << endl;
 					// if the run's range includes the cell
 					if (celli >= my_range.first && celli <= my_range.second) {
-						cout << "included" <<endl;
+						//cout << "included" <<endl;
 						// push the length of the run
 						runs_in_range.push_back((*restrictions)[line][run]);
 					}
@@ -264,6 +266,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
+								//cout << "indicator: " << solved_indicator << "| made " << cellInd << " black in rule 1.5" << endl;
 								//cout << cellInd <<endl;
 								//cout << "coloured the bottom" << endl;
 							}
@@ -276,6 +279,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
+								//cout << "indicator: " << solved_indicator << "| made " << cellInd << " black in rule 1.5" << endl;
 								//cout << "coloured the top" << endl;
 								//cout << cellInd <<endl;
 							}
@@ -287,6 +291,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
+								//cout << "indicator: " << solved_indicator << "| made " << cellInd << " black in rule 1.5" << endl;
 								//cout << cellInd <<endl;
 							}
 
@@ -296,6 +301,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 								// colour it
 								cells[cellInd] = 1;
 								solved_indicator++;
+								//cout << "indicator: " << solved_indicator << "| made " << cellInd << " black in rule 1.5" << endl;
 								//cout << cellInd <<endl;
 							}
 						}
@@ -330,7 +336,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 				//try to find another black cell
 			}
-			cout << "made it" <<endl;
+			//cout << "made it" <<endl;
 
 			// if there are no black cells, rule does not apply
 		}
@@ -741,6 +747,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 								cells[colind] = 1;
 								// cout << "coloured" << colind << endl;
 								solved_indicator++;
+								//cout << "indicator: " << solved_indicator << "| made " << colind << " white in rule 3.2" << endl;
 							}
 						}
 					}
@@ -749,4 +756,3 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 		}
 	}
 }
-
