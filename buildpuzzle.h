@@ -830,13 +830,38 @@ public:
 						else {
 							for (uint16_t m=0; m<temp.size(); m++) {
 								if (temp[m].second - temp[m].first + 1 > row_restrictions[i][j]) {
-									// former black runs 
-									if (temp[m].second < end) {
+									uint16_t length = temp[m].second - temp[m].first + 1;
+									int16_t curr_run = j;
+									int16_t left = j - 1;
+									int16_t right = j + 1;
+									bool is_left = false;
+									bool is_right = false;
+									while (left >= 0 && right <= k) {
+										if (length <= row_restrictions[i][left] && eachrow_runranges[left].first <= temp[m].first
+											&& eachrow_runranges[left].second >= temp[m].second) {
+											
+											is_left = true;
+											break;
+										}
+										if (length <= row_restrictions[i][right] && eachrow_runranges[right].first <= temp[m].first
+											&& eachrow_runranges[right].second >= temp[m].second) {
+
+											is_right = true;
+											break;
+										}
+										left -= 1;
+										right += 1;
+									}
+									if (is_left && is_right) {
+										continue;
+									}
+									else if (is_left) {
+										// the black seg belongs to former black runs
 										// js = ie + 2
 										start = temp[m].second + 2;
 									}
-									// later black runs
-									else if (temp[m].second > end) {
+									else if (is_right) {
+										// the black seg belongs to later black runs
 										// je = is - 2
 										end = temp[m].first - 2;
 									}
@@ -912,13 +937,48 @@ public:
 						else {
 							for (uint16_t m=0; m<temp.size(); m++) {
 								if (temp[m].second - temp[m].first + 1 > col_restrictions[i][j]) {
-									// former black runs 
-									if (temp[m].second < end) {
+									uint16_t length = temp[m].second - temp[m].first + 1;
+									// // former black runs 
+									// if (temp[m].second < end) {
+									// 	// js = ie + 2
+									// 	start = temp[m].second + 2;
+									// }
+									// // later black runs
+									// else if (temp[m].second > end) {
+									// 	// je = is - 2
+									// 	end = temp[m].first - 2;
+									// }
+									int16_t curr_run = j;
+									int16_t left = j - 1;
+									int16_t right = j + 1;
+									bool is_left = false;
+									bool is_right = false;
+									while (left >= 0 && right <= k) {
+										if (length <= col_restrictions[i][left] && eachcol_runranges[left].first <= temp[m].first
+											&& eachcol_runranges[left].second >= temp[m].second) {
+											
+											is_left = true;
+											break;
+										}
+										if (length <= col_restrictions[i][right] && eachcol_runranges[right].first <= temp[m].first
+											&& eachcol_runranges[right].second >= temp[m].second) {
+
+											is_right = true;
+											break;
+										}
+										left -= 1;
+										right += 1;
+									}
+									if (is_left && is_right) {
+										continue;
+									}
+									else if (is_left) {
+										// the black seg belongs to former black runs
 										// js = ie + 2
 										start = temp[m].second + 2;
 									}
-									// later black runs
-									else if (temp[m].second > end) {
+									else if (is_right) {
+										// the black seg belongs to later black runs
 										// je = is - 2
 										end = temp[m].first - 2;
 									}
