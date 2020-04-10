@@ -356,7 +356,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 			// skip the first and last runs because those won't have runs prior or after themselves
 			for (uint16_t runs = 0; runs <runs_per_line; runs++) {
 
-				cout << "line: " << line << "| run: " << runs << endl;
+				//cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
 				// assume that there is some black
 				bool noBlackBox = false;
 
@@ -365,22 +365,22 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 				// if it's the first run in the line
 				if (runs == 0){
 					startLine = 0;
-					cout << "start loop 0" << endl;
+					//cout << "start loop 0" << endl;
 				}
 				// if it's any other run
 				else {
 					startLine = (*black_runs)[line][runs-1].second + 1; // +1 if you wanna exclude the black run AT r(j-1)e
-					cout << "start loop at " << startLine << endl;
+					//cout << "start loop at " << start << endl;
 				}
 				uint16_t start = n_cols*line+ startLine;
-
 
 				if (isCol) {
 					start = n_cols*startLine+ line;
 				}
+				//cout << "start loop at " << start << endl;
 
 				// iterate thru cells in the line until finding black box
-				while (cells[start] != 0 && startLine < perpTotal) {
+				while (startLine < perpTotal && cells[start] != 0) {
 					startLine++;
 
 					if (isCol) {
@@ -404,7 +404,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 					break;
 				}
 
-				cout << "start black at: " << start << endl;
+				//cout << "start black at: " << start << endl;
 				//cout << endl;
 
 				// get index of endpoint
@@ -413,25 +413,23 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 				if (runs == runs_per_line -1){
 					// start from the highest place
 					endLine = perpTotal-1;
-					cout << "end loop at " << endLine << endl;
+					//cout << "end loop at " << endLine << endl;
 				}
 				// if it's any other run
 				else {
 					endLine = (*black_runs)[line][runs+1].first -1; // -1 to avoid counting yourself
-					cout << "end loop at " << endLine << endl;
+					//cout << "end loop at " << end << endl;
 				}
 
 				uint16_t end = n_cols*line+ endLine;
-
-
-
 				if (isCol) {
 					//cout << "the col: " << line <<  " the run: " << runs-1 <<  "|| the row: " << endLine << endl;
 					end = n_cols*endLine+ line;
 				}
+				//cout << "end loop at " << end << endl;
 
 				// iterate thru cells in the line backwards until finding black box
-				while (cells[end] != 0 && endLine >= 0) {
+				while (endLine >= 0 && cells[end] != 0) {
 					endLine--;
 
 					if (isCol) {
@@ -440,7 +438,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 					else {
 						end = n_cols*line+ endLine;
 					}
-
+					//cout << end << " " << endLine << endl;
 					// you've reached a wall and still found no black
 					if (endLine <= -1 ) {
 						noBlackBox = true;
@@ -456,7 +454,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 					break;
 				}
 
-				cout << "end black at: " << end << endl << endl;
+				//cout << "end black at: " << end << endl << endl;
 				// cout << endl;
 
 				// if you found nothing, or the black box is next to the wall endLine == -1
