@@ -269,19 +269,27 @@ public:
 						// checking for a black run of length 1
 						if (start == n_cols-1) {
 							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] != 0) {
-								// make the previous cell empty
-								if (cells[look_at_cell-1] == -1) {
-									cells[look_at_cell-1] = 1;
-									solved_indicator++;
-								}
+								if (j > 0) {
+									if (eachrow_runranges[j-1].second <= start) {
+										// make the previous cell empty
+										if (cells[look_at_cell-1] == -1) {
+											cells[look_at_cell-1] = 1;
+											solved_indicator++;
+										}
+									}
+								}	
 							}
 						}
 						else {
 							if (cells[look_at_cell]==0 && cells[look_at_cell-1] != 0 && cells[look_at_cell+1] != 0) {
-								// make the previous cell empty
-								if (cells[look_at_cell-1] == -1) {
-									cells[look_at_cell-1] = 1;
-									solved_indicator++;
+								if (j > 0) {
+									if (eachrow_runranges[j-1].second <= start) {
+										// make the previous cell empty
+										if (cells[look_at_cell-1] == -1) {
+											cells[look_at_cell-1] = 1;
+											solved_indicator++;
+										}
+									}
 								}
 							}
 						}
@@ -293,22 +301,29 @@ public:
 							
 							// checking for a black run of length 1 
 							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] !=0 && cells[look_at_cell+1] != 0) {
-								// make the next cell empty
-								if (cells[look_at_cell+1] == -1) {
-									cells[look_at_cell+1] = 1;
-									solved_indicator++;
+								if (j < k-1) {
+									if (eachrow_runranges[j+1].first >= end) {
+										// make the next cell empty
+										if (cells[look_at_cell+1] == -1) {
+											cells[look_at_cell+1] = 1;
+											solved_indicator++;
+										}
+									}
 								}
 							}
-							
 						}
 						else {
 							// assuming puzzle size will be atleast 2x2 
 							// checking for black run of length 1
 							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
-								// make the next cell empty
-								if (cells[look_at_cell+1] == -1) {
-									cells[look_at_cell+1] = 1;
-									solved_indicator++;
+								if (j < k-1) {
+									if (eachrow_runranges[j+1].first >= end) {
+										// make the next cell empty
+										if (cells[look_at_cell+1] == -1) {
+											cells[look_at_cell+1] = 1;
+											solved_indicator++;
+										}
+									}
 								}
 							}
 						}
@@ -336,21 +351,28 @@ public:
 						if (start == n_rows-1) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
 								// make the previous cell empty
-								if (cells[prev_row_same_col] == -1) {
-									cells[prev_row_same_col] = 1;
-									solved_indicator++;
-								}
+								if (j > 0) {
+									if (eachcol_runranges[j-1].second <= start) {
+										if (cells[prev_row_same_col] == -1) {
+											cells[prev_row_same_col] = 1;
+											solved_indicator++;
+										}
+									}
+								}	
 							}
 						}
 						else {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
 								&& cells[next_row_same_col] != 0) {
-								// make the previous cell empty
-								if (cells[prev_row_same_col] == -1) {
-									cells[prev_row_same_col] = 1;
-									solved_indicator++;
+								if (j > 0) {
+									if (eachcol_runranges[j-1].second <= start) {
+										// make the previous cell empty
+										if (cells[prev_row_same_col] == -1) {
+											cells[prev_row_same_col] = 1;
+											solved_indicator++;
+										}
+									}
 								}
-
 								// cout << "cell that is being emptied: ";
 								// cout << prev_row_same_col << endl;
 							}
@@ -365,19 +387,27 @@ public:
 						if (end != 0) {
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
 								&& cells[next_row_same_col] != 0) {
-								// make the next cell empty
-								if (cells[next_row_same_col] == -1) {
-									cells[next_row_same_col] = 1;
-									solved_indicator++;
+								if (j < k-1) {
+									if (eachcol_runranges[j+1].first >= end) {
+										// make the next cell empty
+										if (cells[next_row_same_col] == -1) {
+											cells[next_row_same_col] = 1;
+											solved_indicator++;
+										}
+									}
 								}
 							}
 						}
 						else {
 							if (cells[look_at_cell] == 0 && cells[next_row_same_col] != 0) {
-								// make the next cell empty 
-								if (cells[next_row_same_col] == -1) {
-									cells[next_row_same_col] = 1;
-									solved_indicator++;
+								if (j < k-1) {
+									if (eachcol_runranges[j+1].first >= end) {
+										// make the next cell empty 
+										if (cells[next_row_same_col] == -1) {
+											cells[next_row_same_col] = 1;
+											solved_indicator++;
+										}
+									}
 								}
 							}
 						}
