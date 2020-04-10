@@ -356,6 +356,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 			// skip the first and last runs because those won't have runs prior or after themselves
 			for (uint16_t runs = 0; runs <runs_per_line; runs++) {
 
+				cout << "line: " << line << "| run: " << runs << endl;
 				// assume that there is some black
 				bool noBlackBox = false;
 
@@ -364,10 +365,12 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 				// if it's the first run in the line
 				if (runs == 0){
 					startLine = 0;
+					cout << "start loop 0" << endl;
 				}
 				// if it's any other run
 				else {
 					startLine = (*black_runs)[line][runs-1].second + 1; // +1 if you wanna exclude the black run AT r(j-1)e
+					cout << "start loop at " << startLine << endl;
 				}
 				uint16_t start = n_cols*line+ startLine;
 
@@ -401,7 +404,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 					break;
 				}
 
-				//cout << "start black at: " << start << endl;
+				cout << "start black at: " << start << endl;
 				//cout << endl;
 
 				// get index of endpoint
@@ -410,10 +413,12 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 				if (runs == runs_per_line -1){
 					// start from the highest place
 					endLine = perpTotal-1;
+					cout << "end loop at " << endLine << endl;
 				}
 				// if it's any other run
 				else {
 					endLine = (*black_runs)[line][runs+1].first -1; // -1 to avoid counting yourself
+					cout << "end loop at " << endLine << endl;
 				}
 
 				uint16_t end = n_cols*line+ endLine;
@@ -451,14 +456,14 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 					break;
 				}
 
-				// cout << "end black at: " << end << endl;
+				cout << "end black at: " << end << endl << endl;
 				// cout << endl;
 
 				// if you found nothing, or the black box is next to the wall endLine == -1
 				// colour everything between startpoint and endpoint
 				push_to_colour(startLine, endLine, line, isCol);
 
-				if (endLine > startLine) {
+				if (endLine >= startLine) {
 					//change the range of the current run that you just filled in
 					(*black_runs)[line][runs].first = endLine + 1 - (*restrictions)[line][runs];
 					(*black_runs)[line][runs].second = (*restrictions)[line][runs] + startLine -1;
