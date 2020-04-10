@@ -100,10 +100,10 @@ int16_t Puzzle::find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t inc
 			// cout << "index: " << index << endl;
 			// if you find a white, return the cell
 			if (cells[index] == 1) {
-				cout << "index: " << index << endl;
+				//cout << "index: " << index << endl;
 				return topLim;
 			}
-			cout << "top: " << topLim << ", ";
+			//cout << "top: " << topLim << ", ";
 			topLim--;
 
 		}
@@ -113,7 +113,7 @@ int16_t Puzzle::find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t inc
 		}
 		// found nothing
 		else{
-			cout << "not in range ";
+			//cout << "not in range ";
 			return -2;
 		}
 	}
@@ -160,7 +160,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 			// alter index accordingly depending if you're iterating thru columns or rows
 			if (isCol) {
 				cellInd = n_cols*celli +line;
-				cout << endl;
+				//cout << endl;
 				//cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
 			}
 			else {
@@ -357,7 +357,7 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 		// skip the first and last runs because those won't have runs prior or after themselves
 		for (uint16_t runs = 0; runs <runs_per_line; runs++) {
 			//cout << endl;
-			cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
+			//cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
 			// assume that there is some black
 			bool noBlackBox = false;
 
@@ -400,8 +400,6 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 
 			// if you found no black boxes in the line, go to the next line.
 			if (noBlackBox) {
-				cout << "no black in this line yet startLine" << endl << endl;
-				//cout << endl;
 				continue;
 			}
 
@@ -450,8 +448,6 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 
 			// if you found no black boxes in the line, go to the next line.
 			if (noBlackBox) {
-				cout << "no black in this line yet enLine" << endl <<endl;
-				//cout << endl;
 				continue;
 			}
 
@@ -485,8 +481,6 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 
 			if (!connected) {
 				cout << endl;
-				cout << "3.1 TESTTT" << endl;
-				cout << "not connected" << endl;
 				continue;
 			}
 
