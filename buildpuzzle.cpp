@@ -120,7 +120,7 @@ int16_t Puzzle::find_white_or_wall(int16_t bottomLim, int16_t topLim, int8_t inc
 
 // private boi, colour from low to high 
 void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol) {
-	// cout << "line: " << line << endl;
+	cout << "line: " << line << endl;
 	for (int ind = low; ind <= high; ind++) {
 
 		// if the cell hasn't been coloured yet
@@ -133,7 +133,7 @@ void Puzzle::push_to_colour(int16_t low, int16_t high, uint16_t line, bool isCol
 		if (cells[colind]== -1) {
 			// colour it
 			cells[colind] = 0;
-			// cout << colind << endl;
+			 cout << colind << endl;
 			solved_indicator++;
 			//cout << "indicator: " << solved_indicator << "| made " << colind << " black in push_to_colour" << endl;
 		}
@@ -159,11 +159,11 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 			// alter index accordingly depending if you're iterating thru columns or rows
 			if (isCol) {
 				cellInd = n_cols*celli +line;
-				//cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
+				cout << "col: " << line << "| row: " << celli << "| cell:" << cellInd  << endl;
 			}
 			else {
 				cellInd = n_cols*line+celli;
-				//cout << "row: " << line << "| col: " << celli<< "| cell:" << cellInd  << endl;
+				cout << "row: " << line << "| col: " << celli<< "| cell:" << cellInd  << endl;
 			}
 
 			
@@ -188,7 +188,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 				// find minimum length 
 				uint16_t minlen = *min_element(runs_in_range.begin(), runs_in_range.end());
-				//cout << "checkpoint1 ," << endl;
+				cout << "checkpoint1 ," << endl;
 
 				if (adjacent_find(runs_in_range.begin(), runs_in_range.end(), not_equal_to<>() ) == runs_in_range.end()) {
 				    // elements in vec are all the same
@@ -217,7 +217,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 						//cout << "new cellind: " << cellInd <<endl;
 				    }
 
-				    //cout << "checkpoint2 ,";
+				    cout << "checkpoint2 ,";
 
 				    if (isCol) {
 						cellInd = n_cols*celli +line;
@@ -240,7 +240,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 						}
 				    }
 
-				   	// cout << "checkpoint3 ," << endl;
+				   	cout << "checkpoint3 ," << endl;
 
 				    // cout << "end: " << end << endl;
 				    // check if you touched the wall
@@ -306,7 +306,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 							}
 						}
 
-						//cout << "checkpoint4 ," << endl;
+						cout << "checkpoint4 ," << endl;
 				    }
 				}
 
@@ -336,7 +336,7 @@ void Puzzle::expand_and_limit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 				//try to find another black cell
 			}
-			//cout << "made it" <<endl;
+			cout << "made it" <<endl;
 
 			// if there are no black cells, rule does not apply
 		}
@@ -351,124 +351,154 @@ void Puzzle::fill_in_void(uint16_t total, uint16_t perpTotal, vector<vector<uint
 
 		uint16_t runs_per_line = (*restrictions)[line].size();
 
-		//if (runs_per_line >= 3) {
-			// iterate thru all runs in the line
-			// skip the first and last runs because those won't have runs prior or after themselves
-			for (uint16_t runs = 0; runs <runs_per_line; runs++) {
+		// iterate thru all runs in the line
+		// skip the first and last runs because those won't have runs prior or after themselves
+		for (uint16_t runs = 0; runs <runs_per_line; runs++) {
+			//cout << endl;
+			//cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
+			// assume that there is some black
+			bool noBlackBox = false;
 
-				//cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
-				// assume that there is some black
-				bool noBlackBox = false;
+			// get index of the startpoint
+			uint16_t startLine;
+			// if it's the first run in the line
+			if (runs == 0){
+				startLine = 0;
+				//cout << "start loop 0" << endl;
+			}
+			// if it's any other run
+			else {
+				startLine = (*black_runs)[line][runs-1].second + 1; // +1 if you wanna exclude the black run AT r(j-1)e
+				//cout << "start loop at " << start << endl;
+			}
+			uint16_t start = n_cols*line+ startLine;
 
-				// get index of the startpoint
-				uint16_t startLine;
-				// if it's the first run in the line
-				if (runs == 0){
-					startLine = 0;
-					//cout << "start loop 0" << endl;
-				}
-				// if it's any other run
-				else {
-					startLine = (*black_runs)[line][runs-1].second + 1; // +1 if you wanna exclude the black run AT r(j-1)e
-					//cout << "start loop at " << start << endl;
-				}
-				uint16_t start = n_cols*line+ startLine;
+			if (isCol) {
+				start = n_cols*startLine+ line;
+			}
+			//cout << "start loop at " << startLine << endl;
+
+			// iterate thru cells in the line until finding black box
+			while (startLine < perpTotal && cells[start] != 0) {
+				startLine++;
 
 				if (isCol) {
 					start = n_cols*startLine+ line;
 				}
-				//cout << "start loop at " << start << endl;
-
-				// iterate thru cells in the line until finding black box
-				while (startLine < perpTotal && cells[start] != 0) {
-					startLine++;
-
-					if (isCol) {
-						start = n_cols*startLine+ line;
-					}
-					else {
-						start = n_cols*line+ startLine;
-					}
-
-					// you've reached a wall and still found no black
-					if (startLine >= perpTotal ) {
-						noBlackBox = true;
-					}
-					// if you found a black box its position is saved in startLine
-				}
-
-				// if you found no black boxes in the line, go to the next line.
-				if (noBlackBox) {
-					//cout << "no black in this line yet" << endl;
-					cout << endl;
-					break;
-				}
-
-				//cout << "start black at: " << start << endl;
-				//cout << endl;
-
-				// get index of endpoint
-				int16_t endLine;
-				// if it's the last run in the line
-				if (runs == runs_per_line -1){
-					// start from the highest place
-					endLine = perpTotal-1;
-					//cout << "end loop at " << endLine << endl;
-				}
-				// if it's any other run
 				else {
-					endLine = (*black_runs)[line][runs+1].first -1; // -1 to avoid counting yourself
-					//cout << "end loop at " << end << endl;
+					start = n_cols*line+ startLine;
 				}
 
-				uint16_t end = n_cols*line+ endLine;
+				// you've reached a wall and still found no black
+				if (startLine >= perpTotal ) {
+					noBlackBox = true;
+				}
+				// if you found a black box its position is saved in startLine
+			}
+
+			// if you found no black boxes in the line, go to the next line.
+			if (noBlackBox) {
+				//cout << "no black in this line yet" << endl;
+				//cout << endl;
+				break;
+			}
+
+			//cout << "start black at: " << startLine << endl;
+			//cout << endl;
+
+			// get index of endpoint
+			int16_t endLine;
+			// if it's the last run in the line
+			if (runs == runs_per_line -1){
+				// start from the highest place
+				endLine = perpTotal-1;
+				//cout << "end loop at " << endLine << endl;
+			}
+			// if it's any other run
+			else {
+				endLine = (*black_runs)[line][runs+1].first -1; // -1 to avoid counting yourself
+				//cout << "end loop at " << end << endl;
+			}
+
+			uint16_t end = n_cols*line+ endLine;
+			if (isCol) {
+				//cout << "the col: " << line <<  " the run: " << runs-1 <<  "|| the row: " << endLine << endl;
+				end = n_cols*endLine+ line;
+			}
+			//cout << "end loop at " << endLine << endl;
+
+			// iterate thru cells in the line backwards until finding black box
+			while (endLine >= 0 && cells[end] != 0) {
+				endLine--;
+
 				if (isCol) {
-					//cout << "the col: " << line <<  " the run: " << runs-1 <<  "|| the row: " << endLine << endl;
 					end = n_cols*endLine+ line;
 				}
-				//cout << "end loop at " << end << endl;
-
-				// iterate thru cells in the line backwards until finding black box
-				while (endLine >= 0 && cells[end] != 0) {
-					endLine--;
-
-					if (isCol) {
-						end = n_cols*endLine+ line;
-					}
-					else {
-						end = n_cols*line+ endLine;
-					}
-					//cout << end << " " << endLine << endl;
-					// you've reached a wall and still found no black
-					if (endLine <= -1 ) {
-						noBlackBox = true;
-					}
-
-					// if you found a black box its position is saved in endLine
+				else {
+					end = n_cols*line+ endLine;
+				}
+				//cout << end << " " << endLine << endl;
+				// you've reached a wall and still found no black
+				if (endLine <= -1 ) {
+					noBlackBox = true;
 				}
 
-				// if you found no black boxes in the line, go to the next line.
-				if (noBlackBox) {
-					//cout << "no black in this line yet" << endl;
-					cout << endl;
-					break;
-				}
-
-				//cout << "end black at: " << end << endl << endl;
-				// cout << endl;
-
-				// if you found nothing, or the black box is next to the wall endLine == -1
-				// colour everything between startpoint and endpoint
-				push_to_colour(startLine, endLine, line, isCol);
-
-				if (endLine >= startLine) {
-					//change the range of the current run that you just filled in
-					(*black_runs)[line][runs].first = endLine + 1 - (*restrictions)[line][runs];
-					(*black_runs)[line][runs].second = (*restrictions)[line][runs] + startLine -1;
-				}
+				// if you found a black box its position is saved in endLine
 			}
-		//}
-		// if there isn't a minimum of 3 runs in the line, rule won't apply
+
+			// if you found no black boxes in the line, go to the next line.
+			if (noBlackBox) {
+				//cout << "no black in this line yet" << endl;
+				//cout << endl;
+				break;
+			}
+
+			//cout << "end black at: " << endLine << endl << endl;
+			// cout << endl;
+
+			bool connected = true;
+
+			// check that the indices can be connected (no whites in between)
+			uint16_t keepChecking = startLine;
+			while (keepChecking < endLine) {
+				//cout << "went in" << endl;
+				// if there is white between them
+				if (cells[start] == 1) {
+
+					//cout << "not connected" <<endl;
+					connected = false;
+					// to get out of the loop
+					keepChecking = endLine;
+				}
+
+				keepChecking++;
+				if (isCol) {
+					start = n_cols*keepChecking+ line;
+				}
+				else {
+					start = n_cols*line+ keepChecking;
+				}
+
+			}
+
+			if (!connected) {
+				continue;
+			}
+
+			// if you found nothing, or the black box is next to the wall endLine == -1
+			// colour everything between startpoint and endpoint
+			push_to_colour(startLine, endLine, line, isCol);
+
+			if (endLine >= startLine) {
+				//change the range of the current run that you just filled in
+				(*black_runs)[line][runs].first = endLine + 1 - (*restrictions)[line][runs];
+
+				(*black_runs)[line][runs].second = (*restrictions)[line][runs] + startLine -1;
+			}
+			//cout << "end-> ";
+			//cout << "line: " << line << "| run: " << runs << "| my range: " << (*black_runs)[line][runs].first << "-" << (*black_runs)[line][runs].second<< endl;
+			
+		}
 	}
 }
 
@@ -494,7 +524,8 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 			int16_t low_range =(*black_runs)[line][runs].first; // rjs, 
 
 			// find high_range: the index of the last nonwhite cell
-			int16_t high_range =(*black_runs)[line][runs].second; // rje 
+			int16_t high_range =(*black_runs)[line][runs].second; // rje
+			// cout << "index range: " << low_range << "-" << high_range << endl; 
 
 			// get the high cell index
 			uint16_t high_range_cell;
@@ -514,7 +545,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				low_range_cell = n_cols*line+low_range;
 			}
 
-			//cout << "starting at: " << low_range_cell << " ending at: " << high_range_cell<<endl;
+			// cout << "starting at: " << low_range_cell << " ending at: " << high_range_cell<<endl;
 
 			// trim until you find a cell that is not white
 			while (cells[low_range_cell] == 1 && low_range <= high_range) {
@@ -540,6 +571,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				continue; 
 			}
 
+			// cout << "start: " << high_range_cell <<endl;
 			// trim until you find a cell that is not white
 			while (cells[high_range_cell] == 1 && high_range >= low_range) {
 
@@ -554,7 +586,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				}
 			}
 
-			//cout << " || first nonwhite: " << low_range_cell <<endl <<endl;
+			// cout << " || first nonwhite: " << low_range_cell <<endl <<endl;
 			
 
 			// stores the number of segments enclosed by whites
@@ -646,9 +678,10 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				seg_len = white_segs[seg_num].second - white_segs[seg_num].first +1;
 			}
 
-			
+			// cout << "segnum: " <<seg_num << endl;
 			//(*black_runs)[line][runs].first = white_segs[seg_num].first;
 
+			// cout << "checkpoint" <<  endl;
 			// change the range of this run accordingly
 			if (isCol) {
 				(*black_runs)[line][runs].first= floor ((white_segs[seg_num].first- line)/n_cols); 
@@ -658,7 +691,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				(*black_runs)[line][runs].first=  (white_segs[seg_num].first- line*n_cols); 
 			}
 
-			//cout << "rjs: " << (*black_runs)[line][runs].first << endl;
+			// cout << "rjs: " << (*black_runs)[line][runs].first << endl;
 			// save it for later
 			uint16_t init_seg = seg_num;
 
@@ -687,6 +720,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 			}
 
 			//(*black_runs)[line][runs].second = white_segs[seg_num].second;
+			//cout << "checkpoint2" << endl;
 
 			// change the range of this run accordingly
 			if (isCol) {
@@ -697,7 +731,7 @@ void Puzzle::mod_range_to_fit(uint16_t total, uint16_t perpTotal, vector<vector<
 				(*black_runs)[line][runs].second=  (white_segs[seg_num].second- line*n_cols); 
 			}
 
-			//cout << "rje: " << (*black_runs)[line][runs].second <<endl << endl;
+			// cout << "rje: " << (*black_runs)[line][runs].second <<endl << endl;
 
 			// Step 5
 			// iterate thru remaining segs
