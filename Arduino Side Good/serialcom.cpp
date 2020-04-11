@@ -12,7 +12,7 @@
 //
 //  Description: This program takes an input of a nonogram, and solves it
 //  displaying the result on the Arduino.
-//  This file is the main Arduino file that displays the nonogram.
+//  This file contains the communication with the desktop C++
 // ---------------------------------------------------------------------
 
 #include "serialcom.h"
