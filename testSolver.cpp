@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
 
 #include <fstream> 
 #include <string> 
@@ -120,6 +121,10 @@ int main(int argc, char *argv[]){
 
 	// create nonogram object
 	Puzzle nonogram(row_dim, col_dim, rows, columns);
+
+	// starting counter
+    clock_t time;
+    time = clock();
 
 	// get the range for all runs
 	nonogram.initialize_run_ranges();
@@ -267,6 +272,11 @@ int main(int argc, char *argv[]){
 
 	cout << endl;
 	print_stuff(&nonogram, false, true);
+	cout << endl;
+
+	time = clock() - time;  // end counter
+    int runtime = (time*1000000)/CLOCKS_PER_SEC;  // get runtime
+    cout << "Time taken to solve the puzzle: " << runtime << " microseconds" << endl;
 
 	return 0;
 }
