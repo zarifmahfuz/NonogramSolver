@@ -263,65 +263,70 @@ public:
 					uint16_t start = eachrow_runranges[j].first;
 					uint16_t end = eachrow_runranges[j].second;
 
-					if (start != 0) {
-						uint16_t look_at_cell = i*n_cols + start;
+					if (j > 0) {
+						if (start != 0) {
+							uint16_t look_at_cell = i*n_cols + start;
 
-						// checking for a black run of length 1
-						if (start == n_cols-1) {
-							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] != 0) {
-								if (j > 0) {
-									if (eachrow_runranges[j-1].second <= start) {
-										// make the previous cell empty
-										if (cells[look_at_cell-1] == -1) {
-											cells[look_at_cell-1] = 1;
-											solved_indicator++;
+							// checking for a black run of length 1
+							if (start == n_cols-1) {
+								if (cells[look_at_cell] == 0 && cells[look_at_cell-1] != 0) {
+									if (j > 0) {
+										if (eachrow_runranges[j-1].second <= start && row_restrictions[i][j-1] == 1) {
+											// make the previous cell empty
+											if (cells[look_at_cell-1] == -1) {
+												cells[look_at_cell-1] = 1;
+												solved_indicator++;
+											}
 										}
-									}
-								}	
+									}	
+								}
 							}
-						}
-						else {
-							if (cells[look_at_cell]==0 && cells[look_at_cell-1] != 0 && cells[look_at_cell+1] != 0) {
-								if (j > 0) {
-									if (eachrow_runranges[j-1].second <= start) {
-										// make the previous cell empty
-										if (cells[look_at_cell-1] == -1) {
-											cells[look_at_cell-1] = 1;
-											solved_indicator++;
+							else {
+								if (cells[look_at_cell]==0 && cells[look_at_cell-1] != 0 && cells[look_at_cell+1] != 0) {
+									if (j > 0) {
+										if (eachrow_runranges[j-1].second <= start && row_restrictions[i][j-1] == 1) {
+											// make the previous cell empty
+											if (cells[look_at_cell-1] == -1) {
+												cells[look_at_cell-1] = 1;
+												solved_indicator++;
+											}
 										}
 									}
 								}
 							}
 						}
 					}
-					if (end != n_cols-1) {
-						uint16_t look_at_cell = i*n_cols + end;
 
-						if (end != 0) {
-							
-							// checking for a black run of length 1 
-							if (cells[look_at_cell] == 0 && cells[look_at_cell-1] !=0 && cells[look_at_cell+1] != 0) {
-								if (j < k-1) {
-									if (eachrow_runranges[j+1].first >= end) {
-										// make the next cell empty
-										if (cells[look_at_cell+1] == -1) {
-											cells[look_at_cell+1] = 1;
-											solved_indicator++;
+					if (j < k-1) {
+						if (end != n_cols-1) {
+							uint16_t look_at_cell = i*n_cols + end;
+
+							if (end != 0) {
+								
+								// checking for a black run of length 1 
+								if (cells[look_at_cell] == 0 && cells[look_at_cell-1] !=0 && cells[look_at_cell+1] != 0) {
+									if (j < k-1) {
+										if (eachrow_runranges[j+1].first >= end && row_restrictions[i][j+1] == 1) {
+											// make the next cell empty
+											if (cells[look_at_cell+1] == -1) {
+												cells[look_at_cell+1] = 1;
+												solved_indicator++;
+											}
 										}
 									}
 								}
 							}
-						}
-						else {
-							// assuming puzzle size will be atleast 2x2 
-							// checking for black run of length 1
-							if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
-								if (j < k-1) {
-									if (eachrow_runranges[j+1].first >= end) {
-										// make the next cell empty
-										if (cells[look_at_cell+1] == -1) {
-											cells[look_at_cell+1] = 1;
-											solved_indicator++;
+							else {
+								// assuming puzzle size will be atleast 2x2 
+								// checking for black run of length 1
+								if (cells[look_at_cell] == 0 && cells[look_at_cell+1] != 0) {
+									if (j < k-1) {
+										if (eachrow_runranges[j+1].first >= end && row_restrictions[i][j+1] == 1) {
+											// make the next cell empty
+											if (cells[look_at_cell+1] == -1) {
+												cells[look_at_cell+1] = 1;
+												solved_indicator++;
+											}
 										}
 									}
 								}
@@ -352,7 +357,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0) {
 								// make the previous cell empty
 								if (j > 0) {
-									if (eachcol_runranges[j-1].second <= start) {
+									if (eachcol_runranges[j-1].second <= start && col_restrictions[i][j-1] == 1) {
 										if (cells[prev_row_same_col] == -1) {
 											cells[prev_row_same_col] = 1;
 											solved_indicator++;
@@ -365,7 +370,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
 								&& cells[next_row_same_col] != 0) {
 								if (j > 0) {
-									if (eachcol_runranges[j-1].second <= start) {
+									if (eachcol_runranges[j-1].second <= start && col_restrictions[i][j-1] == 1) {
 										// make the previous cell empty
 										if (cells[prev_row_same_col] == -1) {
 											cells[prev_row_same_col] = 1;
@@ -388,7 +393,7 @@ public:
 							if (cells[look_at_cell] == 0 && cells[prev_row_same_col] != 0 
 								&& cells[next_row_same_col] != 0) {
 								if (j < k-1) {
-									if (eachcol_runranges[j+1].first >= end) {
+									if (eachcol_runranges[j+1].first >= end && col_restrictions[i][j+1] == 1) {
 										// make the next cell empty
 										if (cells[next_row_same_col] == -1) {
 											cells[next_row_same_col] = 1;
@@ -401,7 +406,7 @@ public:
 						else {
 							if (cells[look_at_cell] == 0 && cells[next_row_same_col] != 0) {
 								if (j < k-1) {
-									if (eachcol_runranges[j+1].first >= end) {
+									if (eachcol_runranges[j+1].first >= end && col_restrictions[i][j+1] == 1) {
 										// make the next cell empty 
 										if (cells[next_row_same_col] == -1) {
 											cells[next_row_same_col] = 1;
