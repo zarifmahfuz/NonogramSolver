@@ -1,3 +1,17 @@
+// --------------------------------------------------------------------
+//  Names: Paola Valentina Andrade Sequera, Zarif Mahfuz,
+//  Tahiat Goni, Balreet Grewal
+//  Course: CMPUT 275, Winter 2020
+//
+//  Final Project: Nonogram Solver
+//
+//  Acknowledgments: TFT set up code provided from eClass
+//
+//  Description: This program takes an input of a nonogram, and solves it
+//  displaying the result on the Arduino.
+//  This file is the main Arduino file that displays the nonogram.
+// ---------------------------------------------------------------------
+
 /*acknowledgement:copied code provided in class to setup tft display*/
 
 
