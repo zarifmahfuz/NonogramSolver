@@ -98,15 +98,15 @@ void build() {
 	square_sizeY = DISPLAY_HEIGHT/puzzle_sizeY; //integer division
 	square_sizeX = DISPLAY_HEIGHT/puzzle_sizeX;
 	//for centering the puzzle
-	int squareY = (320 - puzzle_size*square_sizeY)/2;
+	int squareY = (320 - puzzle_sizeY*square_sizeY)/2;
 	//save start position of X as it is required later on again
-	int startX = (480 - puzzle_size*square_sizeX)/2;
+	int startX = (480 - puzzle_sizeX*square_sizeX)/2;
 
 	//iterate through each column and row drawing squares
-	for(int i = 0; i < puzzle_size; i++){
+	for(int i = 0; i < puzzle_sizeX; i++){
 		int squareX = startX;
-		for(int j = 0; j < puzzle_size; j++){
-			if(squares[j][i] == 0){
+		for(int j = 0; j < puzzle_sizeY; j++){
+			if(squares[i][j] == 0){
 				tft.fillRect(squareX, squareY, square_sizeX, square_sizeY, TFT_BLACK);
 			}
 			else{
@@ -133,8 +133,8 @@ void processTouch() {
 	int16_t screen_y = map(touch.x, TS_MINY, TS_MAXY, DISPLAY_HEIGHT-1, 0);
 
 	//calculates the bounds of the grid
-	int boundY = (320 - puzzle_size*square_sizeY)/2;
-	int boundX = (480 - puzzle_size*square_sizeX)/2;
+	int boundY = (320 - puzzle_sizeY*square_sizeY)/2;
+	int boundX = (480 - puzzle_sizeX*square_sizeX)/2;
 
 	//convert the touch into square number in x,y form
 	int touch_squareX = (screen_x-boundX)/square_sizeX;
@@ -190,8 +190,8 @@ void processTouch() {
 
 void emptyGrid(){
 	//initialize an empty grid by iterating through the array
-	for(int i = 0; i < puzzle_size; i++){
-		for(int j = 0; j < puzzle_size; j++){
+	for(int i = 0; i < puzzle_sizeX; i++){
+		for(int j = 0; j < puzzle_sizeY; j++){
 			squares[j][i] = 1;
 		}
 	}
@@ -219,7 +219,8 @@ int main() {
     squares = solvedNono(dimensions);
     }
 
-    puzzle_size = dimensions[0];
+    puzzle_sizeX = dimensions[0];
+    puzzle_sizeY = dimensions[1];
 	build();
 	while(true){
 		processTouch();
