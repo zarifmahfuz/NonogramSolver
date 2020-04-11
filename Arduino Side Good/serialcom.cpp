@@ -1,3 +1,20 @@
+// --------------------------------------------------------------------
+//  Names: Paola Valentina Andrade Sequera, Zarif Mahfuz,
+//  Tahiat Goni, Balreet Grewal
+//  Course: CMPUT 275, Winter 2020
+//
+//  Final Project: Nonogram Solver
+//
+//  Acknowledgments: Used code from Paola and Balreet's Assignment 2 part 1:
+//  Encrypted Arduino Communication. Recieved help with returning a matrix
+//  from https://stackoverflow.com/questions/8617683/return-a-2d-array-from
+//  -a-function
+//
+//  Description: This program takes an input of a nonogram, and solves it
+//  displaying the result on the Arduino.
+//  This file is the main Arduino file that displays the nonogram.
+// ---------------------------------------------------------------------
+
 #include "serialcom.h"
 
 /* 
