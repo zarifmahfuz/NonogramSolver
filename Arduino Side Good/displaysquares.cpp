@@ -217,8 +217,7 @@ int main() {
     }
 
     puzzle_size = dimensions[0];
-	emptyGrid();
-	
+	build();
 	while(true){
 		processTouch();
 	}
