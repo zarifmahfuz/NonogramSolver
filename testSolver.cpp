@@ -12,7 +12,6 @@ using namespace std;
 void print_stuff(Puzzle *puzzle, bool print_ranges, bool print_puzzle) {
 	uint16_t rows = (*puzzle).n_rows;
 	uint16_t cols = (*puzzle).n_cols;
-	//cout << "Rows: " << rows << ", Cols: " << cols << endl;
 
 	if (print_ranges) {
 		for (uint16_t i=0; i<rows; i++) {
@@ -122,183 +121,151 @@ int main(int argc, char *argv[]){
 	// create nonogram object
 	Puzzle nonogram(row_dim, col_dim, rows, columns);
 
+	// get the range for all runs
 	nonogram.initialize_run_ranges();
 
-	nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
+	// solve the puzzle
 
-	//cout << " CHECK COLS:" << endl;
+	while (nonogram.solved_indicator < row_dim*col_dim ) { 
 
-	nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
-	// apply rule 1.2 to the puzzle now
-	nonogram.rule_2(1);
-	nonogram.rule_2(2);
-
-	// at the end of rule 1.2, cells 12, 17 should be empty
-	// uncomment for verification of rule 1.2
-	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
-	// 	cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
-	// }
-
-	// apply rule 1.3 to the puzzle now
-	nonogram.rule_3(1);
-	nonogram.rule_3(2);
-
-	// at the end of rule 1.3 cells 12, 17, 23, 25, 26 should be empty
-	// uncomment for verification of rule 1.3
-	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
-	// 	if (nonogram.cells[i] == 1) {
-	// 		cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
-	// 	}
-	// }
-
-	// apply rule 1.4 to the puzzle now
-	nonogram.rule_4(1);
-	nonogram.rule_4(2);
-
-	//cout << "solved_indicator: " << nonogram.solved_indicator << endl;
-
-	// rule 1.4 does not apply to the state of the puzzle at the end of 
-	// rule 1.3, so the output of this for loop should be the same as the prev one
-	// for (uint16_t i=0; i<row_dim*col_dim; i++) {
-	// 	if (nonogram.cells[i] == 1) {
-	// 		cout << "Cell " << i << ", State: " << nonogram.cells[i] << endl;
-	// 	}
-	// }
-
-	// applying rule 1.5 on rows and columns,respectively 
-	nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-	nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
-	// applying rule 2.1 
-	nonogram.rule_6(1);
-	nonogram.rule_6(2);
-
-	// applying rule 2.2
-	nonogram.rule_7(1); 
-	nonogram.rule_7(2);
-
-	// applying rule 2.3
-	nonogram.rule_8(1);
-	nonogram.rule_8(2);
-
-	// applying rule 3.1
-	// on rows
-	nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-	// on cols
-	cout << "cols" << endl;
-	nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
-	// appplying 3.2
-	// on rows
-	nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-	// on cols
-	nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-
-	print_stuff(&nonogram, false, true);
-	cout << endl;
-
-
-	while (nonogram.solved_indicator < row_dim*col_dim ) {
-
-		// just rows
+		// RUN ALL ROW METHODS
 		nonogram.check_overlap(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-		// cout << "rule 1.1 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_2(1);
-		// cout << "rule 1.2 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_3(1);
-		// cout << "rule 1.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_4(1);
-		// cout << "rule 1.4 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
+
 
 		nonogram.expand_and_limit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-		// cout << "rule 1.5 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_6(1);
-		// cout << "rule 2.1 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 
 		nonogram.rule_7(1);
-		// cout << "rule 2.2 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
+
 
 		nonogram.rule_8(1);
-		// cout << "rule 2.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
+
+
 
 		nonogram.fill_in_void(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-		// cout << "rule 3.1 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.mod_range_to_fit(nonogram.n_rows, nonogram.n_cols, &nonogram.row_restrictions, &nonogram.row_black_runs, false);
-		// cout << "rule 3.2 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
+
 
 		nonogram.rule_11(1);
-		// cout << "rule 3.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
 
-		cout << "----------------------------------------" << endl;
-		cout << "COLS" << endl;
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
-		// just columns
+		// RUN ALL COL METHODS
 		nonogram.check_overlap(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-		// cout << "rule 1.1 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_2(2);
-		// cout << "rule 1.2 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_3(2);
-		// cout << "rule 1.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_4(2);
-		// cout << "rule 1.4 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.expand_and_limit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-		// cout << "rule 1.5 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_6(2);
-		// cout << "rule 2.1 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_7(2);
-		// cout << "rule 2.2 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_8(2);
-		// cout << "rule 2.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.fill_in_void(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-		cout << "rule 3.1 success" <<endl;
-		//cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.mod_range_to_fit(nonogram.n_cols, nonogram.n_rows, &nonogram.col_restrictions, &nonogram.col_black_runs, true);
-		// cout << "rule 3.2 success" <<endl;
-		//cout << nonogram.col_black_runs[3][0].second << endl;
+
+		if (nonogram.solved_indicator == row_dim*col_dim) {
+			break;
+		}
 
 		nonogram.rule_11(2);
-		// cout << "rule 3.3 success" <<endl;
-		// cout << nonogram.col_black_runs[3][0].second << endl;
-
-		print_stuff(&nonogram, false, true);
-		cout  << endl << endl;
 	}
 
+	cout << endl;
 	print_stuff(&nonogram, false, true);
 
 	return 0;
