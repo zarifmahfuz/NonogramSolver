@@ -1,0 +1,74 @@
+
+Names: Paola Valentina Andrade Sequera, Zarif Mahfuz, Tahiat Goni, Balreet Grewal
+Course: CMPUT 275, Winter 2020
+
+Final Project: Nonogram Solver
+
+Acknowledgments: 
+    TFT set up code provided from eClass. Used code from Paola and Balreet's Assignment 2 part 1: Encrypted Arduino Communication. Recieved help with returning a matrix from https://stackoverflow.com/questions/8617683/return-a-2d-array-from-a-function. 
+
+Description:
+    A nonogram(also called picross) is a pictorial logic puzzle in which a grid is given, and within the grid a certain number of boxes must be shaded (black or white). When the puzzle is solved properly, the player is rewarded with a completed, coherent image. In this program we use desktop C++ to solve a Nonogram using a DFS algorithm that makes educated guesses similar to a human player’s logic.
+
+Included Files:
+    * Computer/
+        * buildpuzzle.cpp
+        * buildpuzzle.h
+        * serialport.cpp
+        * serialport.h
+        * testSolver.cpp
+        * SamplePuzzles/
+            * inputSample1.txt
+            * inputSample10.txt
+            * inputSample2.txt
+            * inputSample3.txt
+            * inputSample4.txt
+            * inputSample5.txt
+            * inputSample6.txt
+            * inputSample7.txt
+            * inputSample8.txt
+            * inputSample9.txt
+        * SampleAnswers/
+            * ans.txt
+            * ans10.txt
+            * ans2.txt
+            * ans3.txt
+            * ans5.txt
+            * ans6.txt
+            * ans7.txt
+            * ans8.txt
+            * ans9.txt
+            * myAns.txt
+        * Makefile
+    * Arduino/
+        * displaysquares.cpp
+        * serialcom.cpp
+        * serialcom.h
+        * Makefile
+
+----------------------------------
+For arduino side of communication:
+----------------------------------
+
+    Accessories:
+        * Arduino Mega Board (AMG)
+        * 3.5" TFT LCD Screen with formatted SD card
+
+    Running Instructions:
+        1. Connect Arduino to the PC using A-B style USB cable. Ensure that the Arduino is using the proper serial port (/dev/ttyAMC0).
+        2. In the directory arduino/ containing all of the above stated files, use the command "make upload" to upload the code to the Arduino.
+
+----------------------------------
+For server side of communication:
+----------------------------------
+    
+    Running Instructions:
+        1. In the directory computer/ containing the above listed files and one of the files from "SamplePuzzles" directory, use the following commands:
+            * "make test", "make all"  or "make" to create object files for buildpuzzle.cpp, serialport.cpp and testSolver.cpp and a linked executable for test.
+            * "make clean" to delete all executables and object files
+
+----------------------------------
+
+Notes:
+    * To properly run the program it is imperitive that the serial port /dev/ttyAMC0 is used.
+    * To run the program, first run client side of the program on a terminal, and then run the server side on a seperate terminal window.
