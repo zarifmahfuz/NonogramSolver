@@ -222,11 +222,15 @@ int main() {
     puzzle_sizeX = dimensions[0];
     puzzle_sizeY = dimensions[1];
 	build();
-	tft.setCursor(480 - 60, 10);
-	tft.setTextSize(1);
-	tft.write("Runtime: /n")
-	tft.setCursor(480-60, 18);
-	tft.write(dimensions[2]);
+
+	// Print DFS algorithim runtime
+	tft.setCursor(480 - 75, 10);
+	tft.print("Runtime:");
+	tft.setCursor(480-75, 20);
+	tft.print(dimensions[2]);
+	tft.setCursor(480-75, 30);
+	tft.print("microseconds");
+
 	while(true){
 		processTouch();
 	}
