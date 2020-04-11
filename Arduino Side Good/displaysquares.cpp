@@ -222,6 +222,11 @@ int main() {
     puzzle_sizeX = dimensions[0];
     puzzle_sizeY = dimensions[1];
 	build();
+	tft.setCursor(480 - 60, 10);
+	tft.setTextSize(1);
+	tft.write("Runtime: /n")
+	tft.setCursor(480-60, 18);
+	tft.write(dimensions[2]);
 	while(true){
 		processTouch();
 	}
